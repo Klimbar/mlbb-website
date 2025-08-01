@@ -5,7 +5,7 @@ require_once __DIR__ . '/../includes/header.php';
 
 // Only allow admins
 if ($_SESSION['role'] !== 'admin') {
-    header("Location: /");
+    header("Location: " . BASE_URL . "/");
     exit();
 }
 
@@ -15,185 +15,124 @@ $db = new Database();
 $order_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
 if (!$order_id) {
-    header("Location: /admin/orders.php");
+    header("Location: " . BASE_URL . "/admin/orders.php");
     exit();
 }
 
 // Get order details
 $order = $db->query("
-    SELECT o.*, u.username, u.email 
+    SELECT o.*, u.username, u.email
     FROM orders o
     JOIN users u ON o.user_id = u.id
     WHERE o.id = ?
 ", [$order_id])->fetch_assoc();
 
 if (!$order) {
-    header("Location: /admin/orders.php");
+    header("Location: " . BASE_URL . "/admin/orders.php");
     exit();
 }
 
 // Handle status update
 if ($_POST && isset($_POST['update_status'])) {
-    $new_status = $_POST['status'];
-    $db->query("UPDATE orders SET status = ? WHERE id = ?", [$new_status, $order_id]);
-    header("Location: /admin/order-details.php?id=" . $order_id);
+    $new_status = $_POST['order_status'];
+    $db->query("UPDATE orders SET order_status = ? WHERE id = ?", [$new_status, $order_id]);
+    header("Location: " . BASE_URL . "/admin/order-details.php?id=" . $order_id);
     exit();
 }
 ?>
 
-<div class="container">
-    <div class="order-details-header">
-        <h2>Order Details - #<?= htmlspecialchars($order['order_id']) ?></h2>
-        <a href="/admin/orders.php" class="btn btn-secondary">← Back to Orders</a>
+<div class="container main-content">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Order Details - <?= htmlspecialchars($order['order_id']) ?></h2>
+        <a href="<?php echo BASE_URL; ?>/admin/orders.php" class="btn btn-secondary">← Back to Orders</a>
     </div>
     
-    <div class="order-details-grid">
-        <div class="order-info">
-            <h3>Order Information</h3>
-            <div class="info-row">
-                <label>Order ID:</label>
-                <span><?= htmlspecialchars($order['order_id']) ?></span>
-            </div>
-            <div class="info-row">
-                <label>Player ID:</label>
-                <span><?= htmlspecialchars($order['player_id']) ?></span>
-            </div>
-            <div class="info-row">
-                <label>Zone ID:</label>
-                <span><?= htmlspecialchars($order['zone_id']) ?></span>
-            </div>
-            <div class="info-row">
-                <label>Product:</label>
-                <span><?= htmlspecialchars($order['product_name']) ?></span>
-            </div>
-            <div class="info-row">
-                <label>Amount:</label>
-                <span>$<?= number_format($order['amount'], 2) ?></span>
-            </div>
-            <div class="info-row">
-                <label>Payment Method:</label>
-                <span><?= htmlspecialchars($order['payment_method'] ?? 'N/A') ?></span>
-            </div>
-            <div class="info-row">
-                <label>Payment Status:</label>
-                <span class="status-badge <?= $order['payment_status'] ?>">
-                    <?= ucfirst($order['payment_status']) ?>
-                </span>
-            </div>
-            <div class="info-row">
-                <label>Order Date:</label>
-                <span><?= date('M j, Y g:i A', strtotime($order['created_at'])) ?></span>
-            </div>
-        </div>
-        
-        <div class="customer-info">
-            <h3>Customer Information</h3>
-            <div class="info-row">
-                <label>Username:</label>
-                <span><?= htmlspecialchars($order['username']) ?></span>
-            </div>
-            <div class="info-row">
-                <label>Email:</label>
-                <span><?= htmlspecialchars($order['email']) ?></span>
-            </div>
-        </div>
-        
-        <div class="status-update">
-            <h3>Update Order Status</h3>
-            <form method="POST" class="status-form">
-                <div class="form-group">
-                    <label for="status">Current Status:</label>
-                    <select name="status" id="status" class="form-control">
-                        <option value="pending" <?= $order['status'] === 'pending' ? 'selected' : '' ?>>Pending</option>
-                        <option value="completed" <?= $order['status'] === 'completed' ? 'selected' : '' ?>>Completed</option>
-                        <option value="failed" <?= $order['status'] === 'failed' ? 'selected' : '' ?>>Failed</option>
-                    </select>
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Order Information</h3>
                 </div>
-                <button type="submit" name="update_status" class="btn btn-primary">Update Status</button>
-            </form>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <label class="fw-bold text-secondary">Order ID:</label>
+                        <span><?= htmlspecialchars($order['order_id']) ?></span>
+                    </div>
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <label class="fw-bold text-secondary">Player ID:</label>
+                        <span><?= htmlspecialchars($order['player_id']) ?></span>
+                    </div>
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <label class="fw-bold text-secondary">Zone ID:</label>
+                        <span><?= htmlspecialchars($order['zone_id']) ?></span>
+                    </div>
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <label class="fw-bold text-secondary">Product:</label>
+                        <span><?= htmlspecialchars($order['product_name']) ?></span>
+                    </div>
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <label class="fw-bold text-secondary">Amount:</label>
+                        <span>₹<?= number_format($order['amount'], 2) ?></span>
+                    </div>
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <label class="fw-bold text-secondary">Payment Status:</label>
+                        <span class="badge bg-<?= $order['payment_status'] === 'paid' ? 'success' : ($order['payment_status'] === 'pending' ? 'warning' : 'danger') ?>">
+                            <?= ucfirst($order['payment_status'] ?? 'Failed') ?>
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <label class="fw-bold text-secondary">Order Status:</label>
+                        <span class="badge bg-<?= $order['order_status'] === 'completed' ? 'success' : ($order['order_status'] === 'pending' ? 'warning' : 'danger') ?>">
+                            <?= ucfirst($order['order_status']) ?>
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between py-2">
+                        <label class="fw-bold text-secondary">Order Date:</label>
+                        <span><?= date('M j, Y g:i A', strtotime($order['created_at'])) ?></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3>Customer Information</h3>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <label class="fw-bold text-secondary">Username:</label>
+                        <span><?= htmlspecialchars($order['username']) ?></span>
+                    </div>
+                    <div class="d-flex justify-content-between py-2">
+                        <label class="fw-bold text-secondary">Email:</label>
+                        <span><?= htmlspecialchars($order['email']) ?></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3>Update Order Status</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" class="d-flex gap-3 align-items-end">
+                        <div class="mb-3 flex-grow-1">
+                            <label for="order_status" class="form-label">Current Status:</label>
+                            <select name="order_status" id="order_status" class="form-select">
+                                <option value="pending" <?= $order['order_status'] === 'pending' ? 'selected' : '' ?>>Pending</option>
+                                <option value="completed" <?= $order['order_status'] === 'completed' ? 'selected' : '' ?>>Completed</option>
+                                <option value="failed" <?= $order['order_status'] === 'failed' ? 'selected' : '' ?>>Failed</option>
+                            </select>
+                        </div>
+                        <button type="submit" name="update_status" class="btn btn-primary">Update Status</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-<style>
-.order-details-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-}
 
-.order-details-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    margin-bottom: 2rem;
-}
-
-.order-info, .customer-info, .status-update {
-    background: #f8f9fa;
-    padding: 1.5rem;
-    border-radius: 8px;
-    border: 1px solid #dee2e6;
-}
-
-.status-update {
-    grid-column: span 2;
-}
-
-.info-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid #e9ecef;
-}
-
-.info-row:last-child {
-    border-bottom: none;
-}
-
-.info-row label {
-    font-weight: bold;
-    color: #495057;
-}
-
-.status-form {
-    display: flex;
-    gap: 1rem;
-    align-items: end;
-}
-
-.form-group {
-    flex: 1;
-}
-
-.form-control {
-    width: 100%;
-    padding: 0.5rem;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-}
-
-@media (max-width: 768px) {
-    .order-details-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .status-update {
-        grid-column: span 1;
-    }
-    
-    .order-details-header {
-        flex-direction: column;
-        gap: 1rem;
-        align-items: flex-start;
-    }
-    
-    .status-form {
-        flex-direction: column;
-        align-items: stretch;
-    }
-}
-</style>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

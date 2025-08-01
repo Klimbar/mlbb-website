@@ -1,6 +1,7 @@
 <?php
 require_once 'config.php';
 require_once 'includes/api_helpers.php';
+require_once 'includes/db.php';
 
 header('Content-Type: application/json');
 
@@ -17,17 +18,9 @@ function getBaseApiParams(): array {
 try {
     switch ($action) {
         case 'getProducts':
-            $params = getBaseApiParams() + ['product' => 'mobilelegends'];
-            $params['sign'] = generateSign($params, API_KEY);
-
-            $response = callApi('/smilecoin/api/productlist', $params);
-            if ($response === null) {
-                http_response_code(502); // Bad Gateway
-                echo json_encode(['status' => 502, 'message' => 'Failed to retrieve product list from the provider.']);
-                break;
-            }
-
-            echo json_encode($response);
+            $db = new Database();
+            $products = $db->query("SELECT product_id as id, name as spu, selling_price as price FROM products ORDER BY price ASC")->fetch_all(MYSQLI_ASSOC);
+            echo json_encode(['status' => 200, 'message' => 'success', 'data' => ['product' => $products]]);
             break;
 
         case 'verifyPlayer':
@@ -36,10 +29,10 @@ try {
             $productid = trim($_POST['productid'] ?? '');
 
             // Enhanced input validation
-            if (empty($userid) || empty($zoneid) || empty($productid)) {
+            if (empty($userid) || empty($zoneid)) {
 
                 http_response_code(400);
-                echo json_encode(['status' => 400, 'message' => 'Missing required parameters: userid, zoneid, or productid.']);
+                echo json_encode(['status' => 400, 'message' => 'Missing required parameters: userid or zoneid.']);
                 break;
             }
             if (!ctype_digit($userid) || !ctype_digit($zoneid)) {
@@ -47,6 +40,9 @@ try {
                 echo json_encode(['status' => 400, 'message' => 'Player ID and Zone ID must be numeric.']);
                 break;
             }
+
+            // Use default productid if not provided
+            $productid = !empty($productid) ? $productid : '22590';
 
             $params = getBaseApiParams() + [
                 'userid' => $userid,

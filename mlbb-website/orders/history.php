@@ -5,9 +5,8 @@ require_once __DIR__ . '/../includes/header.php';
 
 $db = new Database();
 $result = $db->query("
-    SELECT o.*, p.transaction_id, p.status as payment_status, p.created_at as payment_date
+    SELECT o.* 
     FROM orders o
-    LEFT JOIN payments p ON p.order_id = o.id
     WHERE o.user_id = ?
     ORDER BY o.created_at DESC
 ", [$_SESSION['user_id']]);
@@ -15,54 +14,64 @@ $result = $db->query("
 $orders = $result->fetch_all(MYSQLI_ASSOC);
 ?>
 
-<div class="container">
+<div class="container main-content">
     <h2>My Order History</h2>
     
     <?php if (empty($orders)): ?>
         <p>You haven't placed any orders yet.</p>
     <?php else: ?>
-        <table class="order-table">
-            <thead>
-                <tr>
-                    <th>Order ID</th>
-                    <th>Product</th>
-                    <th>Player ID</th>
-                    <th>Amount</th>
-                    <th>Status</th>
-                    <th>Payment</th>
-                    <th>Date</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($orders as $order): ?>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
                     <tr>
-                        <td><?= htmlspecialchars($order['order_id']) ?></td>
-                        <td><?= htmlspecialchars($order['product_name']) ?></td>
-                        <td><?= htmlspecialchars($order['player_id']) ?></td>
-                        <td>$<?= number_format($order['amount'], 2) ?></td>
-                        <td>
-                            <span class="status-badge <?= $order['status'] ?>">
-                                <?= ucfirst($order['status']) ?>
-                            </span>
-                        </td>
-                        <td>
-                            <?php if ($order['payment_status']): ?>
-                                <span class="payment-status <?= $order['payment_status'] ?>">
-                                    <?= ucfirst($order['payment_status']) ?>
-                                </span>
-                            <?php else: ?>
-                                N/A
-                            <?php endif; ?>
-                        </td>
-                        <td><?= date('M j, Y', strtotime($order['created_at'])) ?></td>
-                        <td>
-                            <a href="/orders/details.php?id=<?= $order['id'] ?>" class="btn btn-sm">View</a>
-                        </td>
+                        <th>Order ID</th>
+                        <th>Product</th>
+                        <th>Player ID</th>
+                        <th>Amount</th>
+                        <th>Order Status</th>
+                        <th>Payment Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
                     </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    <?php foreach ($orders as $order): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($order['order_id']) ?></td>
+                            <td><?= htmlspecialchars($order['product_name']) ?></td>
+                            <td><?= htmlspecialchars($order['player_id']) ?></td>
+                            <td>₹<?= number_format($order['amount'], 2) ?></td>
+                            <td>
+                                <span class="badge bg-<?= $order['order_status'] === 'completed' ? 'success' : ($order['order_status'] === 'pending' ? 'warning' : 'danger') ?>">
+                            <?= ucfirst($order['order_status']) ?>
+                        </span>
+                            </td>
+                            <td>
+                                <?php
+                                $payment_status_display = $order['payment_status'] ?? 'N/A'; // Default to N/A if NULL
+                                $badge_class = 'secondary'; // Default badge color for N/A
+
+                                if ($payment_status_display === 'paid') {
+                                    $badge_class = 'success';
+                                } elseif ($payment_status_display === 'pending') {
+                                    $badge_class = 'warning';
+                                } elseif ($payment_status_display === 'failed') {
+                                    $badge_class = 'danger';
+                                }
+                                ?>
+                                <span class="badge bg-<?= $badge_class ?>">
+                                    <?= ucfirst($payment_status_display) ?>
+                                </span>
+                            </td>
+                            <td><?= date('M j, Y', strtotime($order['created_at'])) ?></td>
+                            <td>
+                                <a href="<?php echo BASE_URL; ?>/orders/details.php?id=<?= $order['id'] ?>" class="btn btn-sm btn-primary">View</a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
     <?php endif; ?>
 </div>
 

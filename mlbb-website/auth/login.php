@@ -5,7 +5,7 @@ require_once __DIR__ . '/../includes/header.php';
 
 // Redirect if already logged in
 if (isset($_SESSION['user_id'])) {
-    header("Location: /");
+    header("Location: " . BASE_URL . "/");
     exit();
 }
 
@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['username'] = $user['username'];
             $_SESSION['role'] = $user['role'];
             
-            header("Location: /");
+            header("Location: " . BASE_URL . "/");
             exit();
         } else {
             $error = "Invalid email or password";
@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<div class="container">
+<div class="container main-content">
     <h2>Login</h2>
     
     <?php if (isset($error)): ?>
@@ -47,20 +47,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <form method="POST">
         <input type="hidden" name="csrf_token" value="<?= generateCSRFToken() ?>">
         
-        <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" required>
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" id="email" name="email" class="form-control" required>
         </div>
         
-        <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" required>
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" id="password" name="password" class="form-control" required>
         </div>
         
-        <button type="submit" class="btn">Login</button>
+        <button type="submit" class="btn btn-primary">Login</button>
     </form>
     
-    <p>Don't have an account? <a href="/auth/register.php">Register here</a></p>
+    <p>Don't have an account? <a href="<?php echo BASE_URL; ?>/auth/register.php">Register here</a></p>
 </div>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

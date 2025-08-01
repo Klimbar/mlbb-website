@@ -34,7 +34,7 @@ try {
             product_id VARCHAR(50) NOT NULL,
             product_name VARCHAR(255) NOT NULL,
             amount DECIMAL(10,2) NOT NULL,
-            status ENUM('pending', 'completed', 'failed') DEFAULT 'pending',
+            order_status ENUM('pending', 'completed', 'failed') DEFAULT 'pending',
             payment_method VARCHAR(50),
             payment_url VARCHAR(255),
             payment_status ENUM('pending', 'paid', 'refunded') DEFAULT 'pending',

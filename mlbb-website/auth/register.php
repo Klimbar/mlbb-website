@@ -5,7 +5,7 @@ require_once __DIR__ . '/../includes/header.php';
 
 // Redirect if already logged in
 if (isset($_SESSION['user_id'])) {
-    header("Location: /");
+    header("Location: " . BASE_URL . "/");
     exit();
 }
 
@@ -64,14 +64,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['username'] = $username;
             $_SESSION['role'] = 'user';
             
-            header("Location: /");
+            header("Location: " . BASE_URL . "/");
             exit();
         }
     }
 }
 ?>
 
-<div class="container">
+<div class="container main-content">
     <h2>Register</h2>
     
     <?php if (!empty($errors)): ?>
@@ -85,30 +85,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <form method="POST">
         <input type="hidden" name="csrf_token" value="<?= generateCSRFToken() ?>">
         
-        <div class="form-group">
-            <label for="username">Username</label>
-            <input type="text" id="username" name="username" required>
+        <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" id="username" name="username" class="form-control" required>
         </div>
         
-        <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" required>
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" id="email" name="email" class="form-control" required>
         </div>
         
-        <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" required>
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" id="password" name="password" class="form-control" required>
         </div>
         
-        <div class="form-group">
-            <label for="confirm_password">Confirm Password</label>
-            <input type="password" id="confirm_password" name="confirm_password" required>
+        <div class="mb-3">
+            <label for="confirm_password" class="form-label">Confirm Password</label>
+            <input type="password" id="confirm_password" name="confirm_password" class="form-control" required>
         </div>
         
-        <button type="submit" class="btn">Register</button>
+        <button type="submit" class="btn btn-primary">Register</button>
     </form>
     
-    <p>Already have an account? <a href="/auth/login.php">Login here</a></p>
+    <p>Already have an account? <a href="<?php echo BASE_URL; ?>/auth/login.php">Login here</a></p>
 </div>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

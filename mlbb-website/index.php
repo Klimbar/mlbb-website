@@ -3,77 +3,94 @@
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/includes/db.php';
 
-// Initialize variables for last used IDs from the cookie for persistence across visits.
-$last_player_id = $_COOKIE['last_player_id'] ?? '';
-$last_zone_id = $_COOKIE['last_zone_id'] ?? '';
-
 require_once __DIR__ . '/includes/header.php';
 ?>
  
-<div class="container">
+<div class="container main-content">
     <!-- Show welcome message if logged in -->
     <?php if (isset($_SESSION['user_id'])): ?>
         <div class="alert alert-success">
             Welcome, <?= htmlspecialchars($_SESSION['username']) ?>!
-            (<a href="/auth/logout.php">Logout</a>)
+            (<a href="<?php echo BASE_URL; ?>/auth/logout.php">Logout</a>)
         </div>
     <?php endif; ?>
+
+    <!-- Player Information (only shown if logged in) -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h2>Account Details</h2>
+                </div>
+                <div class="card-body">
+                    <form id="playerForm">
+                        <div class="mb-3">
+                            <label for="userid" class="form-label">Player ID:</label>
+                            <input type="text" id="userid" class="form-control" required value="">
+                        </div>
+                        <div class="mb-3">
+                            <label for="zoneid" class="form-label">Zone ID:</label>
+                            <input type="text" id="zoneid" class="form-control" required value="">
+                        </div>
+                        <div class="d-grid gap-2 button-group-width">
+                            <?php if (!empty($_COOKIE['last_player_id'])): ?>
+                                <button type="button" id="useLastBtn" class="btn btn-secondary mb-2">Last Used IDs</button>
+                            <?php endif; ?>
+                            <button type="button" id="verifyBtn" class="btn btn-primary">Verify Player</button>
+                        </div>
+                        <div id="playerVerificationError" class="error hidden"></div>
+                    </form>
+                    <div id="playerInfo" class="mt-3"></div>
+                    <!-- Order Status -->
+                    <div id="orderStatus" class="hidden"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Main content -->
     <h1>Mobile Legends Diamond Top-Up</h1>
 
-    <!-- Product Selection -->
-    <div class="section">
-        <h2>Select Diamond Package</h2>
-        <div id="products" class="product-grid"></div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h2>Select Diamond Package</h2>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="btn-group category-buttons" role="group" aria-label="Product Categories">
+                            <button type="button" class="btn btn-primary active" data-category="diamonds">Diamonds</button>
+                            <button type="button" class="btn btn-outline-primary" data-category="weekly_pass">Weekly Pass</button>
+                            <button type="button" class="btn btn-outline-primary" data-category="twilight_pass">Twilight Pass</button>
+                            <button type="button" class="btn btn-outline-primary" data-category="double_diamonds">Double Diamonds</button>
+                        </div>
+                    </div>
+                    <div id="products" class="row row-cols-1 row-cols-md-3 g-4"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Player Information (only shown if logged in) -->
+    <!-- Payment Section (only shown if logged in) -->
     <?php if (isset($_SESSION['user_id'])): ?>
-        <div class="section">
-            <h2>Player Details</h2>
-            <form id="playerForm">
-                <div class="form-group">
-                    <label for="userid">Player ID:</label>
-                    <input type="text" id="userid" required value="<?= htmlspecialchars($last_player_id) ?>">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4 d-none" id="paymentSection">
+                <div class="card-header">
+                    <h2>Payment</h2>
                 </div>
-                <div class="form-group">
-                    <label for="zoneid">Zone ID:</label>
-                    <input type="text" id="zoneid" required value="<?= htmlspecialchars($last_zone_id) ?>">
-                </div>
-                <div class="form-actions">
-                    <button type="button" id="verifyBtn">Verify Player</button>
-                    <?php if (!empty($last_player_id)): ?>
-                        <button type="button" id="useLastBtn" class="btn-secondary">Use Last IDs</button>
-                    <?php endif; ?>
-                </div>
-            </form>
-            <div id="playerInfo" class="hidden"></div>
-        </div>
-
-        <!-- Payment Section -->
-        <div class="section hidden" id="paymentSection">
-            <div class="form-group">
-                <label>Payment Method:</label>
-                <div id="paymentMethodButtons" class="payment-methods">
-                    <button type="button" class="payment-method-btn" data-value="pay0">Pay0 Gateway (UPI/Cards)</button>
-                    <!-- Add other payment method buttons here -->
+                <div class="card-body">
+                    <div id="selectedProduct" class="mb-3"></div>
+                    <div class="d-grid">
+                        <button type="button" id="payNowBtn" class="btn btn-success">Pay Now</button>
+                    </div>
+                    <div id="paymentErrorStatus" class="hidden mt-3"></div>
                 </div>
             </div>
-            <div id="selectedProduct"></div>
-            <div>
-                <button type="button" id="payNowBtn" class="btn">Pay Now</button>
-            </div>
         </div>
-    <?php else: ?>
-        <!-- Show login prompt if not logged in -->
-        <div class="alert alert-info">
-            Please <a href="/auth/login.php">login</a> to purchase diamonds.
-        </div>
+    </div>
     <?php endif; ?>
-
-    <!-- Order Status -->
-    <div id="orderStatus" class="hidden"></div>
 </div>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

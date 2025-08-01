@@ -35,10 +35,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $verify_params['sign'] = generateSign($verify_params, API_KEY);
         $verify_response = callApi('/smilecoin/api/getrole', $verify_params);
 
-        if ($verify_response === null) {
-            throw new Exception('Could not connect to the game provider to verify the player. Please try again later.');
-        }
-
         if (!isset($verify_response['status']) || $verify_response['status'] !== 200) {
             error_log("Player verification failed: " . ($verify_response['message'] ?? 'Unknown API error'));
             throw new Exception('Player verification failed: ' . ($verify_response['message'] ?? 'Unknown API error'));
@@ -46,18 +42,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $price_multiplier = (float)($verify_response['change_price'] ?? 1);
 
         // --- SERVER-SIDE PRICE VERIFICATION ---
-        // 2. Fetch the selected product's selling price and name from our local database
-        $db = new Database();
-        $selected_product_db = $db->query("SELECT name, selling_price FROM products WHERE product_id = ?", [$product_id])->fetch_assoc();
+        // 2. Fetch product list from the trusted API source
+        $product_params = ['uid' => API_UID, 'email' => API_EMAIL, 'product' => 'mobilelegends', 'time' => time()];
+        $product_params['sign'] = generateSign($product_params, API_KEY);
+        $products_response = callApi('/smilecoin/api/productlist', $product_params);
+        
+        if ($products_response === null || !isset($products_response['data']['product'])) {
+            error_log("Could not retrieve product list from provider.");
+            throw new Exception('Could not retrieve product list from provider.');
+        }
+        $products = $products_response['data']['product'];
 
-        if ($selected_product_db === null) {
-            error_log("Product not found in local database: " . $product_id);
-            throw new Exception('Product not found in our system.');
+        // 3. Find the selected product to get its base price and name
+        $selected_product = null;
+        foreach ($products as $product) {
+            if ($product['id'] == $product_id) { // API uses 'id' for productid
+                $selected_product = $product;
+                break;
+            }
         }
 
-        // 3. Use the selling price from our database
-        $base_price = (float)$selected_product_db['selling_price'];
-        $product_name = $selected_product_db['name'];
+        if ($selected_product === null) {
+            error_log("Invalid product ID: " . $product_id);
+            throw new Exception('Invalid product ID.');
+        }
+
+        // 4. Use the trusted base price, apply the multiplier, and get the name
+        $base_price = (float)$selected_product['price'];
+        $product_name = $selected_product['spu']; // API uses 'spu' for product name
         $final_price = $base_price * $price_multiplier; // Calculate the final price
         $formatted_final_price = number_format($final_price, 2, '.', ''); // Format to a string with 2 decimal places
 
@@ -65,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $db = new Database();
         $order_id = 'MLBB' . time() . rand(100, 999);
         $db->query(
-            "INSERT INTO orders (user_id, order_id, player_id, zone_id, product_id, product_name, amount, order_status) 
+            "INSERT INTO orders (user_id, order_id, player_id, zone_id, product_id, product_name, amount, status) 
             VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')",
             [$user_id, $order_id, $player_id, $zone_id, $product_id, $product_name, $formatted_final_price]
         );
@@ -122,7 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } catch (Exception $e) {
         http_response_code(500);
         error_log("Process Payment Error: " . $e->getMessage());
-        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        echo json_encode(['status' => 'error', 'message' => 'An internal error occurred while processing your order. Please try again later.']);
     }
 }
 ?>
