@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../includes/db.php';
-require_once __DIR__ . '/../includes/header.php';
+
 
 // Redirect if already logged in
 if (isset($_SESSION['user_id'])) {
@@ -60,7 +60,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <button type="submit" class="btn btn-primary">Login</button>
     </form>
     
-    <p>Don't have an account? <a href="<?php echo BASE_URL; ?>/auth/register.php">Register here</a></p>
+    <p>Don't have an account? <a href="<?php echo BASE_URL; ?>/auth/register">Register here</a></p>
 </div>
-
-<?php require_once __DIR__ . '/../includes/footer.php'; ?>

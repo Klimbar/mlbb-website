@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/auth-check.php';
-require_once __DIR__ . '/../includes/header.php';
+
 
 // Only allow admins
 if ($_SESSION['role'] !== 'admin') {
@@ -17,11 +17,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_product'])) {
     $productId = $_POST['product_id'];
     $name = $_POST['name'];
     $sellingPrice = $_POST['selling_price'];
+    $isOutOfStock = isset($_POST['is_out_of_stock']) ? 1 : 0;
 
     try {
         $db->query(
-            "UPDATE products SET name = ?, selling_price = ? WHERE id = ?",
-            [$name, $sellingPrice, $productId]
+            "UPDATE products SET name = ?, selling_price = ?, is_out_of_stock = ? WHERE id = ?",
+            [$name, $sellingPrice, $isOutOfStock, $productId]
         );
         $message = '<div class="alert alert-success">Product updated successfully!</div>';
     } catch (Exception $e) {
@@ -54,6 +55,7 @@ $products = $db->query("SELECT * FROM products ORDER BY price ASC")->fetch_all(M
                             <th>Pack Name</th>
                             <th>API Cost (R$)</th>
                             <th>Selling Price (₹)</th>
+                            <th>Out of Stock</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -73,6 +75,12 @@ $products = $db->query("SELECT * FROM products ORDER BY price ASC")->fetch_all(M
                                         </div>
                                     </td>
                                     <td>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="is_out_of_stock_<?php echo $product['id']; ?>" name="is_out_of_stock" <?php echo $product['is_out_of_stock'] ? 'checked' : ''; ?>>
+                                            <label class="form-check-label" for="is_out_of_stock_<?php echo $product['id']; ?>"></label>
+                                        </div>
+                                    </td>
+                                    <td>
                                         <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
                                         <button type="submit" name="update_product" class="btn btn-primary btn-sm">Update</button>
                                     </td>
@@ -85,7 +93,7 @@ $products = $db->query("SELECT * FROM products ORDER BY price ASC")->fetch_all(M
         </div>
     </div>
     <div class="mt-3">
-        <a href="<?php echo BASE_URL; ?>/admin/update_products.php" class="btn btn-secondary">Fetch/Update Products from API</a>
+        <a href="<?php echo BASE_URL; ?>/admin/update_products" class="btn btn-secondary">Fetch/Update Products from API</a>
     </div>
 
     <?php
@@ -97,4 +105,4 @@ $products = $db->query("SELECT * FROM products ORDER BY price ASC")->fetch_all(M
 </div> <!-- Close container -->
 </div> <!-- Close main-content -->
 
-<?php require_once __DIR__ . '/../includes/footer.php'; ?>
+

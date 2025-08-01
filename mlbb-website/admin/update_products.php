@@ -71,5 +71,5 @@ if ($response && isset($response['data']['product'])) {
     $_SESSION['admin_message'] = '<div class="alert alert-danger">Error updating products: ' . $e->getMessage() . '</div>';
 }
 
-header('Location: ' . BASE_URL . '/admin/manage-products.php');
+header('Location: ' . BASE_URL . '/admin/manage-products');
 exit();

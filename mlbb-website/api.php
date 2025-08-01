@@ -1,9 +1,9 @@
 <?php
-require_once 'config.php';
-require_once 'includes/api_helpers.php';
-require_once 'includes/db.php';
+require_once 'bootstrap.php';
 
+// Set content type to JSON and clean buffer
 header('Content-Type: application/json');
+ob_end_clean();
 
 $action = $_GET['action'] ?? '';
 
@@ -19,7 +19,7 @@ try {
     switch ($action) {
         case 'getProducts':
             $db = new Database();
-            $products = $db->query("SELECT product_id as id, name as spu, selling_price as price FROM products ORDER BY price ASC")->fetch_all(MYSQLI_ASSOC);
+            $products = $db->query("SELECT product_id as id, name as spu, selling_price as price, is_out_of_stock FROM products ORDER BY price ASC")->fetch_all(MYSQLI_ASSOC);
             echo json_encode(['status' => 200, 'message' => 'success', 'data' => ['product' => $products]]);
             break;
 
@@ -72,4 +72,3 @@ try {
     http_response_code(500);
     echo json_encode(['status' => 500, 'message' => 'An internal server error occurred.']);
 }
-?>

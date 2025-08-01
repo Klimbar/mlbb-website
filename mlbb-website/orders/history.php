@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/auth-check.php';
-require_once __DIR__ . '/../includes/header.php';
+
 
 $db = new Database();
 $result = $db->query("
@@ -65,7 +65,7 @@ $orders = $result->fetch_all(MYSQLI_ASSOC);
                             </td>
                             <td><?= date('M j, Y', strtotime($order['created_at'])) ?></td>
                             <td>
-                                <a href="<?php echo BASE_URL; ?>/orders/details.php?id=<?= $order['id'] ?>" class="btn btn-sm btn-primary">View</a>
+                                <a href="<?php echo BASE_URL; ?>/orders/details?id=<?= $order['id'] ?>" class="btn btn-sm btn-primary">View</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -75,4 +75,3 @@ $orders = $result->fetch_all(MYSQLI_ASSOC);
     <?php endif; ?>
 </div>
 
-<?php require_once __DIR__ . '/../includes/footer.php'; ?>

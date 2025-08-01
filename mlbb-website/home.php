@@ -1,0 +1,86 @@
+
+<div class="container main-content">
+    <!-- Show welcome message if logged in -->
+    <?php if (isset($_SESSION['user_id'])): ?>
+        <div class="alert alert-success">
+            Welcome, <?= htmlspecialchars($_SESSION['username']) ?>!
+            (<a href="<?php echo BASE_URL; ?>/auth/logout">Logout</a>)
+        </div>
+    <?php endif; ?>
+  <!-- Main content -->
+    <h1>Mobile Legends Diamond Top-Up</h1>
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h2>Account Details</h2>
+                </div>
+                <div class="card-body">
+                    <form id="playerForm">
+                        <div class="mb-3">
+                            <label for="userid" class="form-label">Player ID:</label>
+                            <input type="number" id="userid" class="form-control" required value="" placeholder="Enter Game ID">
+                        </div>
+                        <div class="mb-3">
+                            <label for="zoneid" class="form-label">Zone ID:</label>
+                            <input type="number" id="zoneid" class="form-control" required value="" placeholder="Enter Server ID">
+                        </div>
+                        <div class="d-grid gap-2 button-group-width">
+                            <?php if (!empty($_COOKIE['last_player_id'])): ?>
+                                <button type="button" id="useLastBtn" class="btn btn-secondary mb-2">Last Used IDs</button>
+                            <?php endif; ?>
+                            <button type="button" id="verifyBtn" class="btn btn-primary">Verify Player</button>
+                        </div>
+                        <div id="playerVerificationError" class="error hidden"></div>
+                    </form>
+                    <div id="playerInfo" class="mt-3"></div>
+                    <!-- Order Status -->
+                    <div id="orderStatus" class="hidden"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h2>Select Diamond Package</h2>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="btn-group category-buttons" role="group" aria-label="Product Categories">
+                            <button type="button" class="btn btn-outline-primary active" data-category="diamonds">Diamonds</button>
+                            <button type="button" class="btn btn-outline-primary" data-category="weekly_pass">Weekly Pass</button>
+                            <button type="button" class="btn btn-outline-primary" data-category="twilight_pass">Twilight Pass</button>
+                            <button type="button" class="btn btn-outline-primary" data-category="double_diamonds">Double Diamonds</button>
+                        </div>
+                    </div>
+                    <div id="products" class="row row-cols-1 row-cols-md-3 g-4"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Section (only shown if logged in) -->
+    <?php if (isset($_SESSION['user_id'])): ?>
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4 d-none" id="paymentSection">
+                <div class="card-header">
+                    <h2>Payment</h2>
+                </div>
+                <div class="card-body">
+                    <div id="selectedProduct" class="mb-3"></div>
+                    <div class="d-grid">
+                        <button type="button" id="payNowBtn" class="btn btn-success">Pay Now</button>
+                    </div>
+                    <div id="paymentErrorStatus" class="hidden mt-3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
+</div>

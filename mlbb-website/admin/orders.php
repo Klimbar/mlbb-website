@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/auth-check.php';
-require_once __DIR__ . '/../includes/header.php';
+
 
 // Only allow admins
 if ($_SESSION['role'] !== 'admin') {
@@ -67,7 +67,7 @@ $orders = $db->query("
                         </span>
                     </td>
                     <td>
-                        <a href="<?php echo BASE_URL; ?>/admin/order-details.php?id=<?= $order['id'] ?>" class="btn btn-sm btn-primary">View</a>
+                        <a href="<?php echo BASE_URL; ?>/admin/order-details?id=<?= $order['id'] ?>" class="btn btn-sm btn-primary">View</a>
                     </td>
                 </tr>
                 <?php endforeach; ?>
@@ -76,4 +76,4 @@ $orders = $db->query("
     </div>
 </div>
 
-<?php require_once __DIR__ . '/../includes/footer.php'; ?>
+

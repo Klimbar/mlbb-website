@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/auth-check.php';
-require_once __DIR__ . '/../includes/header.php';
+
 
 $order_pk_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 $db = new Database();
@@ -17,7 +17,7 @@ $order = $db->query(
 $transaction_id = $order['transaction_id'] ?? '';
 
 if (!$order) {
-    header("Location: " . BASE_URL . "/orders/history.php");
+    header("Location: " . BASE_URL . "/orders/history");
     exit;
 }
 ?>
@@ -85,7 +85,6 @@ if (!$order) {
         </div>
     <?php endif; ?>
     
-    <a href="<?php echo BASE_URL; ?>/orders/history.php" class="btn btn-primary mt-3">Back to Order History</a>
+    <a href="<?php echo BASE_URL; ?>/orders/history" class="btn btn-primary mt-3">Back to Order History</a>
 </div>
 
-<?php require_once __DIR__ . '/../includes/footer.php'; ?>

@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/auth-check.php';
-require_once __DIR__ . '/../includes/header.php';
+
 
 // Only allow admins
 if ($_SESSION['role'] !== 'admin') {
@@ -89,7 +89,7 @@ $recentOrders = $db->query("
                     <tbody>
                         <?php foreach ($recentOrders as $order): ?>
                             <tr>
-                                <td><a href="order-details.php?id=<?= $order['id'] ?>"><?= htmlspecialchars($order['order_id']) ?></a></td>
+                                <td><a href="order-details?id=<?= $order['id'] ?>"><?= htmlspecialchars($order['order_id']) ?></a></td>
                                 <td><?= htmlspecialchars($order['username']) ?></td>
                                 <td><?= htmlspecialchars($order['product_name']) ?></td>
                                 <td>₹<?= number_format($order['amount'], 2) ?></td>
@@ -109,10 +109,9 @@ $recentOrders = $db->query("
                     </tbody>
                 </table>
             </div>
-            <a href="<?php echo BASE_URL; ?>/admin/orders.php" class="btn btn-primary mt-3">View All Orders</a>
-            <a href="<?php echo BASE_URL; ?>/admin/manage-products.php" class="btn btn-secondary mt-3">Manage Products</a>
+            <a href="<?php echo BASE_URL; ?>/admin/orders" class="btn btn-primary mt-3">View All Orders</a>
+            <a href="<?php echo BASE_URL; ?>/admin/manage-products" class="btn btn-secondary mt-3">Manage Products</a>
         </div>
     </div>
 </div>
 
-<?php require_once __DIR__ . '/../includes/footer.php'; ?>

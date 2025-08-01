@@ -1,9 +1,10 @@
 <?php
+
 // Base URL
 // This will dynamically determine the base URL including protocol and domain.
 // IMPORTANT: When you deploy to a production server with a fixed domain,
 // you should replace this dynamic calculation with your actual domain:
-define('BASE_URL', 'https://4b6324fe37e4.ngrok-free.app'); // Hardcoded URL - uncomment for production if needed
+define('BASE_URL', 'https://af3843166d09.ngrok-free.app');
 
 
 // Database and API Configuration
@@ -15,16 +16,14 @@ define('API_EMAIL', 'serdihinsales@gmail.com');
 // Database configuration (if storing orders)
 define('DB_HOST', 'localhost');
 define('DB_USER', 'mlbb_user');
-define('DB_PASS', 'your_password'); // <-- IMPORTANT: Change this!
+define('DB_PASS', 'your_password'); 
 define('DB_NAME', 'mlbb_db');
 //Payment Gateway Configuration
 define('PAYMENT_GATEWAY_URL', 'https://pay0.shop/api/create-order');
 define('PAYMENT_STATUS_URL', 'https://pay0.shop/api/check-order-status');
 define('PAYMENT_API_KEY', 'eb337579b41cd02407eb94358b177507');
-define('PAYMENT_REDIRECT_URL', BASE_URL . '/orders/history.php'); // Redirect user to order history after payment
+define('PAYMENT_REDIRECT_URL', BASE_URL . '/orders/history'); // Redirect user to order history after payment
 
-// Start session
-session_start();
 
 // CSRF Token functions
 function generateCSRFToken() {

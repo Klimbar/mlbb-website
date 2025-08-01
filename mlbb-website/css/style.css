@@ -51,6 +51,8 @@ footer {
     text-align: center;
     cursor: pointer;
     transition: transform 0.3s, box-shadow 0.3s;
+    position: relative; /* Added for overlay positioning */
+    overflow: hidden; /* Ensures overlay doesn't spill */
 }
 
 .product-card:hover {
@@ -64,8 +66,31 @@ footer {
     border-color: var(--primary-accent);
 }
 
+/* Out of Stock Styles */
+.product-card.out-of-stock {
+    opacity: 0.6; /* Dim the card */
+    pointer-events: none; /* Disable clicks on the card */
+}
+
+.out-of-stock-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black overlay */
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5em;
+    font-weight: bold;
+    text-transform: uppercase;
+    z-index: 10; /* Ensure it's above card content */
+}
+
 #products {
-    min-height: 200px; /* Adjust as needed */
+    /* min-height removed to prevent blank space */
 }
 
 
@@ -139,11 +164,11 @@ footer {
 }
 
 #playerInfo {
-    min-height: 30px; /* Adjust as needed */
+    /* min-height removed to prevent blank space */
 }
 
 #selectedProduct {
-    min-height: 100px; /* Adjust as needed */
+    /* min-height removed to prevent blank space */
 }
 
 
@@ -339,4 +364,15 @@ footer {
 .navbar-toggler[aria-expanded="true"] .hamburger-icon span:nth-child(3) {
     top: 8px;
     transform: rotate(-135deg);
+}
+
+/* Hide increment/decrement buttons for number input fields */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
 }

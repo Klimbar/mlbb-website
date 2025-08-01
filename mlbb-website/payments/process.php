@@ -1,4 +1,9 @@
 <?php
+require_once __DIR__ . '/../bootstrap.php'; // Include bootstrap to handle sessions
+
+// Clear any previous output
+ob_clean();
+
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../includes/api_helpers.php'; // We'll need this for API calls
@@ -58,6 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // 3. Use the selling price from our database
         $base_price = (float)$selected_product_db['selling_price'];
         $product_name = $selected_product_db['name'];
+        error_log("DEBUG: base_price = " . $base_price . ", price_multiplier = " . $price_multiplier);
         $final_price = $base_price * $price_multiplier; // Calculate the final price
         $formatted_final_price = number_format($final_price, 2, '.', ''); // Format to a string with 2 decimal places
 
@@ -115,6 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'payment_url' => $result['result']['payment_url'],
                 'order_id' => $order_id
             ]);
+            exit; // Terminate script after sending success response
         } else {
             error_log("Payment gateway error: " . ($result['message'] ?? 'Unknown error'));
             throw new Exception($result['message'] ?? 'Payment gateway error');
@@ -123,6 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         http_response_code(500);
         error_log("Process Payment Error: " . $e->getMessage());
         echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        exit; // Terminate script after sending error response
     }
 }
 ?>

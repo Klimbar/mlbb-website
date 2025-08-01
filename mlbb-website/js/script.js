@@ -12,6 +12,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const paymentErrorStatus = document.getElementById("paymentErrorStatus");
   const useLastBtn = document.getElementById("useLastBtn");
   const playerVerificationError = document.getElementById("playerVerificationError");
+  const useridInput = document.getElementById("userid");
+  const zoneidInput = document.getElementById("zoneid");
 
   // Global variables
   let selectedProduct = null;
@@ -19,6 +21,23 @@ document.addEventListener("DOMContentLoaded", function () {
   let playerData = null;
   let selectedPaymentMethod = "pay0"; // Set default payment method
   let allProducts = []; // Store all products fetched from the API
+  let finalPrice = 0; // Declare finalPrice globally
+
+  // Function to restrict input to numbers
+  const restrictToNumbers = (event) => {
+    if (event.data !== null && !/^[0-9]$/.test(event.data)) {
+      event.preventDefault();
+    }
+  };
+
+  // Attach event listeners for number restriction
+  if (useridInput) {
+    useridInput.addEventListener('beforeinput', restrictToNumbers);
+  }
+
+  if (zoneidInput) {
+    zoneidInput.addEventListener('beforeinput', restrictToNumbers);
+  }
 
   // Load products on page load
   loadProducts();
@@ -26,10 +45,16 @@ document.addEventListener("DOMContentLoaded", function () {
   // Add event listeners to category buttons
   document.querySelectorAll('.btn-group button').forEach(button => {
     button.addEventListener('click', function() {
-      // Remove active class from all buttons
-      document.querySelectorAll('.btn-group button').forEach(btn => btn.classList.remove('active'));
-      // Add active class to the clicked button
+      // Remove active and btn-primary classes, add btn-outline-primary to all buttons
+      document.querySelectorAll('.btn-group button').forEach(btn => {
+        btn.classList.remove('active');
+        btn.classList.remove('btn-primary');
+        btn.classList.add('btn-outline-primary');
+      });
+      // Add active and btn-primary classes, remove btn-outline-primary from the clicked button
       this.classList.add('active');
+      this.classList.add('btn-primary');
+      this.classList.remove('btn-outline-primary');
       const category = this.dataset.category;
       filterAndDisplayProducts(category);
     });
@@ -38,7 +63,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Load available products
   async function loadProducts() {
     try {
-      const response = await fetch(`${BASE_URL}/api.php?action=getProducts`);
+      const response = await fetch(`${BASE_URL}/api?action=getProducts`);
       
 
       if (!response.ok) {
@@ -102,37 +127,54 @@ document.addEventListener("DOMContentLoaded", function () {
     products.forEach((product) => {
       const productCard = document.createElement("div");
       productCard.className = "col";
+      
+      const isOutOfStock = product.is_out_of_stock == 1; // Assuming 1 for true, 0 for false
+      const outOfStockClass = isOutOfStock ? 'out-of-stock' : '';
+      const outOfStockText = isOutOfStock ? '<div class="out-of-stock-overlay">Out of Stock</div>' : '';
+
       productCard.innerHTML = `
-        <div class="card h-100 product-card">
+        <div class="card h-100 product-card ${outOfStockClass}">
           <div class="card-body">
             <h5 class="card-title">${product.spu}</h5>
             <p class="card-text">₹${product.price}</p>
+            ${outOfStockText}
           </div>
         </div>
       `;
 
       const cardElement = productCard.querySelector('.product-card');
 
-      productCard.addEventListener("click", () => {
-        // Remove .selected from all other cards
-        document.querySelectorAll(".product-card").forEach((card) => {
-          card.classList.remove("selected");
+      if (!isOutOfStock) {
+        productCard.addEventListener("click", () => {
+          // Remove .selected from all other cards
+          document.querySelectorAll(".product-card").forEach((card) => {
+            card.classList.remove("selected");
+          });
+          // Add .selected to the clicked card
+          cardElement.classList.add("selected");
+          selectedProduct = product;
+
+          if (selectedProductDiv) {
+            selectedProductDiv.innerHTML = ''; // Clear immediately
+          }
+
+          // Set Pay Now button to loading state immediately
+          if (payNowBtn) {
+            payNowBtn.disabled = true;
+            payNowBtn.textContent = "Loading...";
+          }
+
+          // Always scroll to player details section when a product is selected
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+
+          if (playerVerified) {
+            showPaymentSection();
+          }
         });
-        // Add .selected to the clicked card
-        cardElement.classList.add("selected");
-        selectedProduct = product;
-
-        if (selectedProductDiv) {
-          selectedProductDiv.innerHTML = ''; // Clear immediately
-        }
-
-        // Always scroll to player details section when a product is selected
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-
-        if (playerVerified) {
-          showPaymentSection();
-        }
-      });
+      } else {
+        // Optionally, make out-of-stock cards visually unclickable
+        cardElement.style.cursor = 'not-allowed';
+      }
 
       productsContainer.appendChild(productCard);
     });
@@ -142,8 +184,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (verifyBtn) {
     verifyBtn.addEventListener("click", async function () {
-      const userid = document.getElementById("userid").value;
-      const zoneid = document.getElementById("zoneid").value;
+
+      const userid = useridInput.value;
+      const zoneid = zoneidInput.value;
 
 
       if (!userid || !zoneid) {
@@ -152,18 +195,26 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
-      if (!window.isLoggedIn) {
-        playerVerificationError.textContent = "Please login to purchase diamonds.";
+      // Validate that userid and zoneid are numbers
+      if (isNaN(parseInt(userid)) || !/^[0-9]+$/.test(userid)) {
+        playerVerificationError.textContent = "Player ID must be a number.";
         playerVerificationError.classList.remove("hidden");
-        return; // Stop execution if the user is not logged in
+        return;
       }
+
+      if (isNaN(parseInt(zoneid)) || !/^[0-9]+$/.test(zoneid)) {
+        playerVerificationError.textContent = "Zone ID must be a number.";
+        playerVerificationError.classList.remove("hidden");
+        return;
+      }
+
 
       playerInfo.innerHTML = `<p class="ign-display">IGN: Loading username...</p>`;
       playerVerificationError.classList.add("hidden"); // Hide previous error if any
       
 
       try {
-        const response = await fetch(`${BASE_URL}/api.php?action=verifyPlayer`, {
+        const response = await fetch(`${BASE_URL}/api?action=verifyPlayer`, {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -200,6 +251,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
           if (selectedProduct && window.isLoggedIn) {
             showPaymentSection();
+          } else if (!window.isLoggedIn) {
+            playerInfo.innerHTML += `<p class="error">Please <a href="${BASE_URL}/auth/login">login</a> to purchase diamonds.</p>`;
           }
         } else {
           playerVerificationError.textContent = "Player Not Found";
@@ -223,20 +276,27 @@ document.addEventListener("DOMContentLoaded", function () {
     paymentSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
     selectedProductDiv.innerHTML = '<p>Loading details...</p>'; // Show loading message
+    payNowBtn.disabled = true; // Disable button during loading
+    payNowBtn.textContent = "Loading..."; // Set button text to loading
 
-    // Re-verify player with the currently selected product to get accurate price adjustment
+    let finalPrice = 0; // Initialize finalPrice
+
     try {
-      const response = await fetch(`${BASE_URL}/api.php?action=verifyPlayer`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams({
-          userid: playerData.userid,
-          zoneid: playerData.zoneid,
-          productid: selectedProduct.id,
+      // Use Promise.all to ensure a minimum loading time
+      const [response, ] = await Promise.all([
+        fetch(`${BASE_URL}/api?action=verifyPlayer`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: new URLSearchParams({
+            userid: playerData.userid,
+            zoneid: playerData.zoneid,
+            productid: selectedProduct.id,
+          }),
         }),
-      });
+        new Promise(resolve => setTimeout(resolve, 500)) // Minimum 500ms loading time
+      ]);
 
       const data = await response.json();
 
@@ -252,9 +312,13 @@ document.addEventListener("DOMContentLoaded", function () {
       playerData.price_multiplier = 1;
     }
 
-    
-  const finalPrice =
-      selectedProduct.price * (playerData.price_multiplier || 1);
+    // Calculate final price after fetching adjustment (or on error)
+    if (!selectedProduct || !playerData) {
+        console.error("selectedProduct or playerData is undefined in showPaymentSection.");
+        return; // Exit if essential data is missing
+    }
+    finalPrice = selectedProduct.price * (playerData.price_multiplier || 1);
+
     selectedProductDiv.innerHTML = `
             <h3>Order Summary</h3>
             <p><strong>Player ID:</strong> ${playerData.userid}</p>
@@ -263,9 +327,10 @@ document.addEventListener("DOMContentLoaded", function () {
             <hr>
             <h4>Selected Package</h4>
             <p>${selectedProduct.spu}</p>
-            <p><strong>Price: ₹${finalPrice.toFixed(2)}</strong></p>
+            <p><strong>Price: ₹${(finalPrice || 0).toFixed(2)}</strong></p>
         `;
-    payNowBtn.innerHTML = `Pay Now (₹${finalPrice.toFixed(2)})`;
+    payNowBtn.disabled = false; // Re-enable button
+    payNowBtn.innerHTML = `Pay Now (₹${(finalPrice || 0).toFixed(2)})`; // Set button text with price
   }
 
   // Handle payment method selection
@@ -297,7 +362,7 @@ document.addEventListener("DOMContentLoaded", function () {
       payNowBtn.disabled = true;
       payNowBtn.textContent = "Processing...";
 try {
-        const response = await fetch(`${BASE_URL}/payments/process.php`, {
+        const response = await fetch(`${BASE_URL}/payments/process`, {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -317,13 +382,13 @@ try {
         } else {
           showPaymentError("Failed to initiate payment: " + data.message);
           payNowBtn.disabled = false;
-          payNowBtn.innerHTML = `Pay Now (₹${finalPrice.toFixed(2)})`;
+          payNowBtn.textContent = "Pay Now";
         }
       } catch (error) {
         showPaymentError("Error creating order: " + error.message);
         // Ensure the button is re-enabled even if the fetch itself fails
         payNowBtn.disabled = false;
-        payNowBtn.innerHTML = `Pay Now (₹${finalPrice.toFixed(2)})`;
+        payNowBtn.textContent = "Pay Now";
       }
     });
   }
