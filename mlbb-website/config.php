@@ -4,7 +4,7 @@
 // This will dynamically determine the base URL including protocol and domain.
 // IMPORTANT: When you deploy to a production server with a fixed domain,
 // you should replace this dynamic calculation with your actual domain:
-define('BASE_URL', 'https://af3843166d09.ngrok-free.app');
+define('BASE_URL', 'https://c8d1a5b4bb94.ngrok-free.app');
 
 
 // Database and API Configuration
@@ -18,6 +18,15 @@ define('DB_HOST', 'localhost');
 define('DB_USER', 'mlbb_user');
 define('DB_PASS', 'your_password'); 
 define('DB_NAME', 'mlbb_db');
+
+// SMTP Configuration for PHPMailer
+define('SMTP_HOST', 'smtp.gmail.com');
+define('SMTP_PORT', 587); // Or 465, 25, etc.
+define('SMTP_USERNAME', 'serdihinsales@gmail.com');
+define('SMTP_PASSWORD', 'ovfheudbtctnqmon');
+define('SMTP_FROM_EMAIL', 'serdihinsales@gmail.com');
+define('SMTP_FROM_NAME', 'Serdihin Store');
+
 //Payment Gateway Configuration
 define('PAYMENT_GATEWAY_URL', 'https://pay0.shop/api/create-order');
 define('PAYMENT_STATUS_URL', 'https://pay0.shop/api/check-order-status');

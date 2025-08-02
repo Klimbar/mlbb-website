@@ -1,4 +1,5 @@
 <IfModule mod_rewrite.c>
+    Options -Indexes
     RewriteEngine On
 
     # Externally redirect direct requests for .php files to clean URLs

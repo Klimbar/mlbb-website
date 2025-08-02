@@ -9,12 +9,15 @@ $redirects = [
 
 // Define routes for specific pages
 $routes = [
-    '/' => 'home',
+    '/' => 'pages/games_landing',
     '/api' => 'api',
     '/install' => 'install',
     '/auth/login' => 'auth/login',
     '/auth/logout' => 'auth/logout',
     '/auth/register' => 'auth/register',
+    '/auth/forgot_password' => 'auth/forgot_password',
+    '/auth/reset_password' => 'auth/reset_password',
+    '/mobile_legends' => 'pages/mobile_legends_content',
     '/admin/dashboard' => 'admin/dashboard',
     '/admin/manage-products' => 'admin/manage-products',
     '/admin/orders' => 'admin/orders',
@@ -29,8 +32,8 @@ $routes = [
     '/orders/details' => 'orders/details',
 
     // Dynamic routes for "pretty" URLs
-    '/admin/order-details/(\\d+)' => 'admin/order-details',
-    '/orders/details/(\\d+)' => 'orders/details',
+    '/admin/order-details/(\d+)' => 'admin/order-details',
+    '/orders/details/(\d+)' => 'orders/details',
 ];
 
 // Get the current URI path
@@ -38,7 +41,11 @@ $request_uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $script_name = dirname($_SERVER['SCRIPT_NAME']);
 
 // Normalize script_name to avoid issues with root directory
-$base_path = ($script_name === '/' || $script_name === '\\') ? '' : $script_name;
+if ($script_name === '/' || $script_name === '\\') {
+    $base_path = '';
+} else {
+    $base_path = $script_name;
+}
 
 // Remove the base path from the request URI
 if ($base_path && strpos($request_uri, $base_path) === 0) {
@@ -97,7 +104,7 @@ foreach ($routes as $route => $file) {
 if (!$route_found && array_key_exists($request_uri, $routes)) {
     $route_file = $routes[$request_uri];
     // Exclude header/footer for API routes
-    if ($request_uri === '/api') {
+    if ($request_uri === '/api' || strpos($route_file, 'payments/') === 0) {
         require_once __DIR__ . '/../' . $route_file . '.php';
     } else {
         require_once __DIR__ . '/header.php';

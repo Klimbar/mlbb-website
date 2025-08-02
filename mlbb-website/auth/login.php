@@ -1,10 +1,7 @@
 <?php
-require_once __DIR__ . '/../config.php';
-require_once __DIR__ . '/../includes/db.php';
-
 
 // Redirect if already logged in
-if (isset($_SESSION['user_id'])) {
+if (is_logged_in()) {
     header("Location: " . BASE_URL . "/");
     exit();
 }
@@ -43,6 +40,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <p><?= htmlspecialchars($error) ?></p>
         </div>
     <?php endif; ?>
+    <?php if (isset($_SESSION['success_message'])): ?>
+        <div class="alert alert-success mt-3"><?php echo $_SESSION['success_message']; unset($_SESSION['success_message']); ?></div>
+    <?php endif; ?>
+    <?php if (isset($_SESSION['error_message'])): ?>
+        <div class="alert alert-danger mt-3"><?php echo $_SESSION['error_message']; unset($_SESSION['error_message']); ?></div>
+    <?php endif; ?>
     
     <form method="POST">
         <input type="hidden" name="csrf_token" value="<?= generateCSRFToken() ?>">
@@ -61,4 +64,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </form>
     
     <p>Don't have an account? <a href="<?php echo BASE_URL; ?>/auth/register">Register here</a></p>
+    <p><a href="<?php echo BASE_URL; ?>/auth/forgot_password">Forgot Password?</a></p>
 </div>

@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Create order in database
         $db = new Database();
-        $order_id = 'MLBB' . time() . rand(100, 999);
+        $order_id = 'SD' . time() . rand(100, 999);
         $db->query(
             "INSERT INTO orders (user_id, order_id, player_id, zone_id, product_id, product_name, amount, order_status) 
             VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')",

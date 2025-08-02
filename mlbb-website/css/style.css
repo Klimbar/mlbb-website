@@ -9,6 +9,8 @@ body {
 
 .main-content {
     flex: 1;
+    padding: 1rem 2rem;
+    padding-bottom: 100px; /* Add whitespace at the bottom */
 }
 
 footer {
@@ -99,8 +101,23 @@ footer {
     /* Removed general border-radius here to avoid conflicts */
 }
 
+.category-buttons {
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping again */
+    gap: 10px; /* Add some space between buttons */
+    justify-content: center; /* Center the buttons */
+}
+
 .category-buttons .btn {
+    white-space: nowrap; /* Keep text on one line */
     border-radius: 0 !important; /* Ensure middle buttons are not rounded */
+}
+
+@media (max-width: 767px) {
+    .category-buttons .btn {
+        font-size: 0.75em; /* Smaller font size for mobile */
+        padding: 0.5em 0.8em; /* Adjust padding for smaller font */
+    }
 }
 
 .category-buttons .btn:first-child {
@@ -134,9 +151,9 @@ footer {
 
 .section {
     background-color: var(--card-bg);
-    padding: 30px;
+    padding: 40px;
     border-radius: 15px;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 }
 
 .form-control {
@@ -169,6 +186,11 @@ footer {
 
 #selectedProduct {
     /* min-height removed to prevent blank space */
+}
+
+.whatsapp-icon-container {
+    text-align: center;
+    margin-top: 10px;
 }
 
 
@@ -365,6 +387,10 @@ footer {
     top: 8px;
     transform: rotate(-135deg);
 }
+.whatsapp-icon-container {
+    text-align: center;
+    margin-top: 10px;
+}
 
 /* Hide increment/decrement buttons for number input fields */
 input[type=number]::-webkit-inner-spin-button,
@@ -376,3 +402,119 @@ input[type=number]::-webkit-outer-spin-button {
 input[type=number] {
     -moz-appearance: textfield;
 }
+
+.table td, .table th {
+    white-space: nowrap;
+}
+
+.table input[type="text"].form-control {
+    min-width: 200px;
+}
+
+.product-price {
+    color: #28a745; /* A common green color */
+    font-weight: bold;
+}
+
+/* New styles for product card layout */
+
+
+
+
+.product-card .card-body {
+    flex-grow: 1; /* Allow text content to take remaining space */
+    padding: 0; /* Remove default card-body padding */
+}
+
+.product-card .card-title {
+    font-size: 1em; /* Adjust font size as needed */
+    margin-bottom: 0; /* Remove default margin */
+}
+
+
+
+.product-card .product-subtitle {
+    font-size: 0.85em; /* Smaller font for subtitle */
+    color: #6c757d; /* A subtle grey color */
+    margin-top: 5px; /* Space above subtitle */
+    margin-bottom: 0; /* Remove default margin */
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 576px) {
+    
+    
+    .product-card .card-title,
+    
+    .product-card .product-subtitle {
+        font-size: 0.75em;
+    }
+}
+
+/* Additional styles for new product card layout */
+
+
+
+
+.product-card .text-group {
+    flex-grow: 1; /* Allow text group to take available space */
+    text-align: center; /* Center text within the group */
+    /* Removed margin-left and margin-right as gap will handle spacing */
+}
+
+
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 576px) {
+    .product-card {
+           padding: 5px; /* Even less padding on very small screens */
+       }
+
+    
+    .product-card .card-title {
+        font-size: 0.85em; /* Slightly smaller font for title */
+    }
+    .product-card .product-subtitle {
+        font-size: 0.7em; /* Slightly smaller font for subtitle */
+    }
+    
+}
+
+.product-card .card-img-top {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    margin-right: 10px;
+    flex-shrink: 0;
+}
+
+.product-card .card-content-wrapper {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+
+.product-card .product-price {
+    flex-shrink: 0;
+    margin-left: 10px;
+    text-align: right;
+    font-weight: bold;
+    color: var(--success-color, #28a745);
+}
+
+/* Accessibility focus styles */
+.nav-link:focus,
+.btn:focus {
+    outline: 2px dashed var(--primary-accent);
+    outline-offset: 2px;
+}
+
+/* Dark Mode Support */
+/* @media (prefers-color-scheme: dark) {
+    :root {
+        --primary-bg: #1e1e1e;
+        --card-bg: #2c2c2c;
+        --text-color: #f0f0f0;
+        --secondary-accent: #444;
+    }
+} */

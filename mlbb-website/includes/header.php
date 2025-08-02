@@ -54,7 +54,7 @@
                 </li>
                 <?php else: ?>
                 <li class="nav-item">
-                    <a class="nav-link <?php echo (strpos($_SERVER['REQUEST_URI'], '/auth/login.php') !== false) ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>/auth/login.php">Login</a>
+                    <a class="nav-link <?php echo (strpos($_SERVER['REQUEST_URI'], '/auth/login') !== false) ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>/auth/login">Login</a>
                 </li>
                 <?php endif; ?>
             </ul>

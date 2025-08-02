@@ -1,7 +1,4 @@
 <?php
-require_once __DIR__ . '/../config.php';
-require_once __DIR__ . '/../includes/db.php';
-
 
 // Redirect if already logged in
 if (isset($_SESSION['user_id'])) {

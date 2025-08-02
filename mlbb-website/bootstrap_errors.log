@@ -1,0 +1,76 @@
+[02-Aug-2025 09:12:07 UTC] PHP Warning:  include(../includes/header.php): Failed to open stream: No such file or directory in /var/www/html/mlbb-website/auth/forgot_password.php on line 11
+[02-Aug-2025 09:12:07 UTC] PHP Warning:  include(): Failed opening '../includes/header.php' for inclusion (include_path='.:/usr/share/php') in /var/www/html/mlbb-website/auth/forgot_password.php on line 11
+[02-Aug-2025 09:12:11 UTC] PHP Warning:  include(../includes/header.php): Failed to open stream: No such file or directory in /var/www/html/mlbb-website/auth/forgot_password.php on line 11
+[02-Aug-2025 09:12:11 UTC] PHP Warning:  include(): Failed opening '../includes/header.php' for inclusion (include_path='.:/usr/share/php') in /var/www/html/mlbb-website/auth/forgot_password.php on line 11
+[02-Aug-2025 09:38:55 UTC] send_reset_link.php: Script started.
+[02-Aug-2025 09:38:55 UTC] send_reset_link.php: Script accessed without POST request, redirecting.
+[02-Aug-2025 09:40:13 UTC] send_reset_link.php: Script started.
+[02-Aug-2025 09:40:13 UTC] send_reset_link.php: Script accessed without POST request, redirecting.
+[02-Aug-2025 09:40:23 UTC] send_reset_link.php: Script started.
+[02-Aug-2025 09:40:23 UTC] send_reset_link.php: Script accessed without POST request, redirecting.
+[02-Aug-2025 09:46:13 UTC] reset_password.php: Script started.
+[02-Aug-2025 09:46:13 UTC] reset_password.php: Received token: d9b707697f17ebc70f0e6bde9de03a589b5820c3ac1f2f55dc1d20dfb0aca731
+[02-Aug-2025 09:46:13 UTC] reset_password.php: Token not found or expired in DB for token: d9b707697f17ebc70f0e6bde9de03a589b5820c3ac1f2f55dc1d20dfb0aca731
+[02-Aug-2025 09:47:11 UTC] reset_password.php: Script started.
+[02-Aug-2025 09:47:11 UTC] reset_password.php: Received token: 3dcf42a3bb81c06fa5e97d69a482e6dd258bf0c82566708e4982c474cdcaa9b3
+[02-Aug-2025 09:47:11 UTC] reset_password.php: Token not found or expired in DB for token: 3dcf42a3bb81c06fa5e97d69a482e6dd258bf0c82566708e4982c474cdcaa9b3
+[02-Aug-2025 09:50:35 UTC] PHP Parse error:  syntax error, unexpected fully qualified name "\n", expecting ")" in /var/www/html/mlbb-website/includes/db.php on line 16
+[02-Aug-2025 09:50:39 UTC] PHP Parse error:  syntax error, unexpected fully qualified name "\n", expecting ")" in /var/www/html/mlbb-website/includes/db.php on line 16
+[02-Aug-2025 09:50:40 UTC] PHP Parse error:  syntax error, unexpected fully qualified name "\n", expecting ")" in /var/www/html/mlbb-website/includes/db.php on line 16
+[02-Aug-2025 09:50:44 UTC] PHP Parse error:  syntax error, unexpected fully qualified name "\n", expecting ")" in /var/www/html/mlbb-website/includes/db.php on line 16
+[02-Aug-2025 09:51:57 UTC] PHP Parse error:  syntax error, unexpected token ";", expecting ")" in /var/www/html/mlbb-website/includes/db.php on line 13
+[02-Aug-2025 09:51:58 UTC] PHP Parse error:  syntax error, unexpected token ";", expecting ")" in /var/www/html/mlbb-website/includes/db.php on line 13
+[02-Aug-2025 09:52:59 UTC] PHP Parse error:  syntax error, unexpected fully qualified name "\n", expecting ")" in /var/www/html/mlbb-website/includes/db.php on line 16
+[02-Aug-2025 09:53:00 UTC] PHP Parse error:  syntax error, unexpected fully qualified name "\n", expecting ")" in /var/www/html/mlbb-website/includes/db.php on line 16
+[02-Aug-2025 09:53:04 UTC] PHP Parse error:  syntax error, unexpected fully qualified name "\n", expecting ")" in /var/www/html/mlbb-website/includes/db.php on line 16
+[02-Aug-2025 09:53:06 UTC] PHP Parse error:  syntax error, unexpected fully qualified name "\n", expecting ")" in /var/www/html/mlbb-website/includes/db.php on line 16
+[02-Aug-2025 09:54:04 UTC] PHP Parse error:  syntax error, unexpected fully qualified name "\n", expecting ")" in /var/www/html/mlbb-website/includes/db.php on line 16
+[02-Aug-2025 09:58:30 UTC] reset_password.php: Script started.
+[02-Aug-2025 09:58:30 UTC] reset_password.php: Received token: a0c48097cc88381598b309bce118ccfbae67244bcb06d063949d310a12818d24
+[02-Aug-2025 09:58:30 UTC] reset_password.php: Token found and valid for email: chengklim179@gmail.com
+[02-Aug-2025 10:00:08 UTC] reset_password.php: Script started.
+[02-Aug-2025 10:00:08 UTC] reset_password.php: Received token: a0c48097cc88381598b309bce118ccfbae67244bcb06d063949d310a12818d24
+[02-Aug-2025 10:00:08 UTC] reset_password.php: Token found and valid for email: chengklim179@gmail.com
+[02-Aug-2025 10:00:08 UTC] reset_password.php: POST request received.
+[02-Aug-2025 10:00:08 UTC] reset_password.php: User password updated for email: chengklim179@gmail.com
+[02-Aug-2025 10:00:08 UTC] reset_password.php: Password reset entry deleted for email: chengklim179@gmail.com
+[02-Aug-2025 10:03:01 UTC] reset_password.php: Script started.
+[02-Aug-2025 10:03:01 UTC] reset_password.php: Received token: a0c48097cc88381598b309bce118ccfbae67244bcb06d063949d310a12818d24
+[02-Aug-2025 10:03:01 UTC] reset_password.php: Token not found or expired in DB for token: a0c48097cc88381598b309bce118ccfbae67244bcb06d063949d310a12818d24
+[02-Aug-2025 10:03:11 UTC] reset_password.php: Script started.
+[02-Aug-2025 10:03:11 UTC] reset_password.php: Received token: a0c48097cc88381598b309bce118ccfbae67244bcb06d063949d310a12818d24
+[02-Aug-2025 10:03:11 UTC] reset_password.php: Token not found or expired in DB for token: a0c48097cc88381598b309bce118ccfbae67244bcb06d063949d310a12818d24
+[02-Aug-2025 10:03:19 UTC] reset_password.php: Script started.
+[02-Aug-2025 10:03:19 UTC] reset_password.php: Received token: a0c48097cc88381598b309bce118ccfbae67244bcb06d063949d310a12818d24
+[02-Aug-2025 10:03:19 UTC] reset_password.php: Token not found or expired in DB for token: a0c48097cc88381598b309bce118ccfbae67244bcb06d063949d310a12818d24
+[02-Aug-2025 10:14:55 UTC] DEBUG: base_price = 188.44, price_multiplier = 1
+[02-Aug-2025 15:55:58 Asia/Kolkata] reset_password.php: Script started.
+[02-Aug-2025 15:55:58 Asia/Kolkata] reset_password.php: Received token: 2cfac97092ce8cf469ea020cc6f1df1c1f6b6d9697919f6d15ec89da9f8652aa
+[02-Aug-2025 15:55:58 Asia/Kolkata] reset_password.php: Token found and valid for email: chengklim179@gmail.com
+[02-Aug-2025 15:56:15 Asia/Kolkata] reset_password.php: Script started.
+[02-Aug-2025 15:56:15 Asia/Kolkata] reset_password.php: Received token: 2cfac97092ce8cf469ea020cc6f1df1c1f6b6d9697919f6d15ec89da9f8652aa
+[02-Aug-2025 15:56:15 Asia/Kolkata] reset_password.php: Token found and valid for email: chengklim179@gmail.com
+[02-Aug-2025 15:56:15 Asia/Kolkata] reset_password.php: POST request received.
+[02-Aug-2025 15:56:15 Asia/Kolkata] reset_password.php: Passwords do not match.
+[02-Aug-2025 15:56:29 Asia/Kolkata] reset_password.php: Script started.
+[02-Aug-2025 15:56:29 Asia/Kolkata] reset_password.php: Received token: 2cfac97092ce8cf469ea020cc6f1df1c1f6b6d9697919f6d15ec89da9f8652aa
+[02-Aug-2025 15:56:29 Asia/Kolkata] reset_password.php: Token found and valid for email: chengklim179@gmail.com
+[02-Aug-2025 15:56:29 Asia/Kolkata] reset_password.php: POST request received.
+[02-Aug-2025 15:56:29 Asia/Kolkata] reset_password.php: User password updated for email: chengklim179@gmail.com
+[02-Aug-2025 15:56:29 Asia/Kolkata] reset_password.php: Password reset entry deleted for email: chengklim179@gmail.com
+[02-Aug-2025 16:02:03 Asia/Kolkata] reset_password.php: Script started.
+[02-Aug-2025 16:02:03 Asia/Kolkata] reset_password.php: Received token: ccc325390f02f508d46e5db279670f0cc99f20566addce13fbcc43b292f0b5f2
+[02-Aug-2025 16:02:03 Asia/Kolkata] reset_password.php: Token found and valid for email: hirjir06@gmail.com
+[02-Aug-2025 16:02:33 Asia/Kolkata] reset_password.php: Script started.
+[02-Aug-2025 16:02:33 Asia/Kolkata] reset_password.php: Received token: ccc325390f02f508d46e5db279670f0cc99f20566addce13fbcc43b292f0b5f2
+[02-Aug-2025 16:02:33 Asia/Kolkata] reset_password.php: Token found and valid for email: hirjir06@gmail.com
+[02-Aug-2025 16:02:33 Asia/Kolkata] reset_password.php: POST request received.
+[02-Aug-2025 16:02:33 Asia/Kolkata] reset_password.php: User password updated for email: hirjir06@gmail.com
+[02-Aug-2025 16:02:33 Asia/Kolkata] reset_password.php: Password reset entry deleted for email: hirjir06@gmail.com
+[02-Aug-2025 16:11:20 Asia/Kolkata] DEBUG: base_price = 785.83, price_multiplier = 1
+[02-Aug-2025 16:20:20 Asia/Kolkata] reset_password.php: Script started.
+[02-Aug-2025 16:20:20 Asia/Kolkata] reset_password.php: Received token: 2cfac97092ce8cf469ea020cc6f1df1c1f6b6d9697919f6d15ec89da9f8652aa
+[02-Aug-2025 16:20:20 Asia/Kolkata] reset_password.php: Token not found or expired in DB for token: 2cfac97092ce8cf469ea020cc6f1df1c1f6b6d9697919f6d15ec89da9f8652aa
+[02-Aug-2025 16:33:03 Asia/Kolkata] DEBUG: base_price = 1, price_multiplier = 1
+[02-Aug-2025 17:01:15 Asia/Kolkata] DEBUG: base_price = 196.46, price_multiplier = 1
+[02-Aug-2025 19:05:46 Asia/Kolkata] DEBUG: base_price = 1, price_multiplier = 1

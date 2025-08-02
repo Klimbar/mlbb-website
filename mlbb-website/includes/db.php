@@ -8,11 +8,14 @@ class Database {
     private $conn;
 
     public function __construct() {
-        $this->conn = new mysqli($this->host, $this->user, $this->pass, $this->dbname);
-        
-        if ($this->conn->connect_error) {
-            // Throw an exception that can be caught by the calling script
-            throw new Exception("Database connection failed: " . $this->conn->connect_error);
+        try {
+            $this->conn = new mysqli($this->host, $this->user, $this->pass, $this->dbname);
+            $this->conn->query("SET time_zone = '+05:30'");
+        } catch (Exception $e) {
+            // Log the error to a file
+            file_put_contents(__DIR__ . '/../../db_errors.log', $e->getMessage() . "\n", FILE_APPEND);
+            // Prevent the application from continuing without a database connection
+            die("Database connection failed. Please check the logs for details.");
         }
     }
 
@@ -60,4 +63,3 @@ class Database {
         return $this->conn->insert_id;
     }
 }
-?>

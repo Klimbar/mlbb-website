@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const playerVerificationError = document.getElementById("playerVerificationError");
   const useridInput = document.getElementById("userid");
   const zoneidInput = document.getElementById("zoneid");
+  const pageTitle = document.getElementById("page-title");
 
   // Global variables
   let selectedProduct = null;
@@ -94,6 +95,24 @@ document.addEventListener("DOMContentLoaded", function () {
   const weeklyPassId = 16642;
   const twilightPassId = 33;
 
+  // Mapping of product IDs to image filenames
+  const productImageMap = {
+    22590: 'double_diamonds.avif',
+    22591: 'double_diamonds.avif',
+    22592: 'double_diamonds.avif',
+    22593: 'double_diamonds.avif',
+    33: 'twilight_pass.jpg',
+    16642: 'weekly_pass.avif',
+    13: 'few_diamonds.webp',
+    23: 'few_diamonds.webp',
+    25: 'many_diamonds.webp',
+    26: 'many_diamonds.webp',
+    27: 'chest.webp',
+    28: 'chest.webp',
+    29: 'large_chest.webp',
+    30: 'large_chest.webp'
+  };
+
   // Filter and display products based on category
   function filterAndDisplayProducts(category) {
     let productsToDisplay = allProducts.filter(product => {
@@ -131,14 +150,20 @@ document.addEventListener("DOMContentLoaded", function () {
       const isOutOfStock = product.is_out_of_stock == 1; // Assuming 1 for true, 0 for false
       const outOfStockClass = isOutOfStock ? 'out-of-stock' : '';
       const outOfStockText = isOutOfStock ? '<div class="out-of-stock-overlay">Out of Stock</div>' : '';
+      const imageUrl = productImageMap[product.id] ? `${BASE_URL}/assets/${productImageMap[product.id]}` : '';
+      const imageTag = imageUrl ? `<img src="${imageUrl}" class="card-img-top" alt="${product.spu}">` : '';
 
       productCard.innerHTML = `
         <div class="card h-100 product-card ${outOfStockClass}">
-          <div class="card-body">
-            <h5 class="card-title">${product.spu}</h5>
-            <p class="card-text">₹${product.price}</p>
-            ${outOfStockText}
+          <div class="card-content-wrapper d-flex align-items-center justify-content-between">
+            ${imageTag}
+            <div class="text-group">
+              <h5 class="card-title mb-0">${product.spu}</h5>
+              <p class="card-text product-subtitle mb-0">${product.description || 'Diamond Pack'}</p>
+            </div>
+            <p class="card-text product-price mb-0">₹${product.price}</p>
           </div>
+          ${outOfStockText}
         </div>
       `;
 
@@ -165,7 +190,7 @@ document.addEventListener("DOMContentLoaded", function () {
           }
 
           // Always scroll to player details section when a product is selected
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          pageTitle.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
           if (playerVerified) {
             showPaymentSection();
@@ -402,25 +427,33 @@ try {
 
   // Show error message for player verification and general errors
   function showError(message) {
-    orderStatus.innerHTML = `<p>Error: ${message}</p>`;
-    orderStatus.classList.remove("hidden");
-    orderStatus.classList.add("error");
-    // For better UX, automatically hide the error message after a few seconds
-    setTimeout(() => {
-      orderStatus.classList.add("hidden");
-      orderStatus.innerHTML = "";
-    }, 5000); // Hides after 5 seconds
+    if (orderStatus) {
+      orderStatus.innerHTML = `<p>Error: ${message}</p>`;
+      orderStatus.classList.remove("hidden");
+      orderStatus.classList.add("error");
+      // For better UX, automatically hide the error message after a few seconds
+      setTimeout(() => {
+        orderStatus.classList.add("hidden");
+        orderStatus.innerHTML = "";
+      }, 5000); // Hides after 5 seconds
+    } else {
+      console.error("Error: orderStatus element not found.", message);
+    }
   }
 
   // Show error message for payment-related errors
   function showPaymentError(message) {
-    paymentErrorStatus.innerHTML = `<p>Error: ${message}</p>`;
-    paymentErrorStatus.classList.remove("hidden");
-    paymentErrorStatus.classList.add("error");
-    // For better UX, automatically hide the error message after a few seconds
-    setTimeout(() => {
-      paymentErrorStatus.classList.add("hidden");
-      paymentErrorStatus.innerHTML = "";
-    }, 5000); // Hides after 5 seconds
+    if (paymentErrorStatus) {
+      paymentErrorStatus.innerHTML = `<p>Error: ${message}</p>`;
+      paymentErrorStatus.classList.remove("hidden");
+      paymentErrorStatus.classList.add("error");
+      // For better UX, automatically hide the error message after a few seconds
+      setTimeout(() => {
+        paymentErrorStatus.classList.add("hidden");
+        paymentErrorStatus.innerHTML = "";
+      }, 5000); // Hides after 5 seconds
+    } else {
+      console.error("Error: paymentErrorStatus element not found.", message);
+    }
   }
 });

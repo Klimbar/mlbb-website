@@ -1,7 +1,12 @@
 
 <footer class="bg-dark text-white text-center p-4">
     <div class="contact-info mt-3">
-        <p class="fs-7">Contact Us: +91 78969 13233 <a href="https://wa.me/917896913233" target="_blank" class="text-white ms-2"><i class="fab fa-whatsapp fa-2x"></i></a></p>
+        <p class="fs-5">Contact Us:</p>
+        <p class="fs-7">Email: serdihinsales@gmail.com</p>
+        <p class="fs-7">Phone: +91 60038 95918</p>
+        <div class="whatsapp-icon-container">
+            <a href="https://wa.me/916003895918" target="_blank" class="text-white"><i class="fab fa-whatsapp fa-lg"></i></a>
+        </div>
     </div>
     <p>&copy; <?= date('Y') ?> Serdihin Store. All Rights Reserved.</p>
 </footer>

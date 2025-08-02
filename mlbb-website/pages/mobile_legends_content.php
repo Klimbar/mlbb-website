@@ -1,3 +1,6 @@
+<?php
+$page_title = 'Mobile Legends Diamond Top-Up';
+?>
 
 <div class="container main-content">
     <!-- Show welcome message if logged in -->
@@ -8,7 +11,7 @@
         </div>
     <?php endif; ?>
   <!-- Main content -->
-    <h1>Mobile Legends Diamond Top-Up</h1>
+    <h1 id="page-title">Mobile Legends Diamond Top-Up</h1>
     <div class="row">
         <div class="col-12">
             <div class="card mb-4">
@@ -58,7 +61,7 @@
                             <button type="button" class="btn btn-outline-primary" data-category="double_diamonds">Double Diamonds</button>
                         </div>
                     </div>
-                    <div id="products" class="row row-cols-1 row-cols-md-3 g-4"></div>
+                    <div id="products" class="row row-cols-2 row-cols-md-2 row-cols-lg-2 g-4"></div>
                 </div>
             </div>
         </div>

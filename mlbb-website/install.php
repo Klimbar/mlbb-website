@@ -37,7 +37,7 @@ try {
             order_status ENUM('pending', 'completed', 'failed') DEFAULT 'pending',
             payment_method VARCHAR(50),
             payment_url VARCHAR(255),
-            payment_status ENUM('pending', 'paid', 'refunded') DEFAULT 'pending',
+            payment_status ENUM('pending', 'paid', 'refunded', 'failed') DEFAULT 'pending',
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES users(id)
         )
