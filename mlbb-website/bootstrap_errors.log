@@ -74,3 +74,13 @@
 [02-Aug-2025 16:33:03 Asia/Kolkata] DEBUG: base_price = 1, price_multiplier = 1
 [02-Aug-2025 17:01:15 Asia/Kolkata] DEBUG: base_price = 196.46, price_multiplier = 1
 [02-Aug-2025 19:05:46 Asia/Kolkata] DEBUG: base_price = 1, price_multiplier = 1
+[02-Aug-2025 23:13:41 Asia/Kolkata] PHP Warning:  Undefined array key "path" in /var/www/html/mlbb-website/includes/header.php on line 29
+[02-Aug-2025 23:13:41 Asia/Kolkata] PHP Warning:  Undefined variable $current_page in /var/www/html/mlbb-website/includes/header.php on line 57
+[02-Aug-2025 23:13:41 Asia/Kolkata] PHP Warning:  Undefined variable $current_page in /var/www/html/mlbb-website/includes/header.php on line 61
+[02-Aug-2025 23:15:34 Asia/Kolkata] PHP Warning:  Undefined array key "path" in /var/www/html/mlbb-website/includes/header.php on line 29
+[02-Aug-2025 23:15:34 Asia/Kolkata] PHP Warning:  Undefined variable $current_page in /var/www/html/mlbb-website/includes/header.php on line 61
+[02-Aug-2025 23:18:58 Asia/Kolkata] PHP Warning:  Undefined array key "path" in /var/www/html/mlbb-website/includes/header.php on line 29
+[02-Aug-2025 23:19:07 Asia/Kolkata] PHP Warning:  Undefined array key "path" in /var/www/html/mlbb-website/includes/header.php on line 29
+[02-Aug-2025 23:19:07 Asia/Kolkata] PHP Warning:  Undefined variable $current_page in /var/www/html/mlbb-website/includes/header.php on line 69
+[02-Aug-2025 23:19:51 Asia/Kolkata] PHP Warning:  Undefined array key "path" in /var/www/html/mlbb-website/includes/header.php on line 29
+[02-Aug-2025 23:19:51 Asia/Kolkata] PHP Warning:  Undefined variable $current_page in /var/www/html/mlbb-website/includes/header.php on line 69

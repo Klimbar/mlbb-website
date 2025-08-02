@@ -13,6 +13,12 @@ body {
     padding-bottom: 100px; /* Add whitespace at the bottom */
 }
 
+@media (max-width: 767px) {
+    .main-content {
+        padding: 1rem; /* Reduce padding on smaller screens */
+    }
+}
+
 footer {
     margin-top: auto !important;
 }
@@ -154,6 +160,12 @@ footer {
     padding: 40px;
     border-radius: 15px;
     margin-bottom: 30px;
+}
+
+@media (max-width: 767px) {
+    .section {
+        padding: 20px; /* Reduce section padding on smaller screens */
+    }
 }
 
 .form-control {
@@ -411,93 +423,173 @@ input[type=number] {
     min-width: 200px;
 }
 
+@media (max-width: 768px) {
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
 .product-price {
     color: #28a745; /* A common green color */
     font-weight: bold;
 }
 
 /* New styles for product card layout */
+.product-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Distribute space between image, body, and overlay */
+    align-items: center; /* Center content horizontally */
+    padding: 15px; /* Add some padding around the content */
+}
 
+.product-card .card-img-top {
+    width: 80px; /* Larger image */
+    height: 80px; /* Larger image */
+    object-fit: contain;
+    margin-bottom: 10px; /* Space between image and text */
+}
 
 .product-card .card-body {
-    flex-grow: 1; /* Allow text content to take remaining space */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Push price to the bottom */
+    flex-grow: 1; /* Allow card-body to take available space */
+    width: 100%; /* Ensure card-body takes full width */
     padding: 0; /* Remove default card-body padding */
+    text-align: center; /* Center text within the body */
 }
 
 .product-card .card-title {
-    font-size: 1em; /* Adjust font size as needed */
-    margin-bottom: 0; /* Remove default margin */
+    font-size: 1.1em; /* Adjust font size as needed */
+    margin-bottom: 5px; /* Space below title */
+    font-weight: bold;
 }
 
-
 .product-card .product-subtitle {
-    font-size: 0.85em; /* Smaller font for subtitle */
+    font-size: 0.9em; /* Smaller font for subtitle */
     color: #6c757d; /* A subtle grey color */
-    margin-top: 5px; /* Space above subtitle */
-    margin-bottom: 0; /* Remove default margin */
+    margin-bottom: 10px; /* Space below subtitle */
+}
+
+.product-card .product-price {
+    font-size: 1.2em; /* Larger font for price */
+    font-weight: bold;
+    color: var(--success-color, #28a745);
+    margin-top: auto; /* Push price to the bottom */
 }
 
 /* Responsive adjustments for smaller screens */
 @media (max-width: 576px) {
     .product-card {
-           padding: 5px; /* Even less padding on very small screens */
-       }
-
-    .product-card .card-title,
-    .product-card .product-subtitle {
-        font-size: 0.85em; /* Slightly smaller font for title */
-        white-space: normal; /* Allow text to wrap */
-        overflow-wrap: break-word; /* Break long words */
+        padding: 10px; /* Adjust padding on smaller screens */
     }
-    
-    .product-card .text-group {
-        flex-grow: 1;
-        min-width: 0; /* Allow text group to shrink */
-        text-align: center;
+
+    .product-card .card-img-top {
+        width: 60px;
+        height: 60px;
+    }
+
+    .product-card .card-title {
+        font-size: 1em;
+    }
+
+    .product-card .product-subtitle {
+        font-size: 0.8em;
     }
 
     .product-card .product-price {
-        margin-left: 5px; /* Reduce margin on small screens */
+        font-size: 1.1em;
     }
-    
 }
 
-/* Additional styles for new product card layout */
-
-
-.product-card .text-group {
-    flex-grow: 1; /* Allow text group to take available space */
-    text-align: center; /* Center text within the group */
-    /* Removed margin-left and margin-right as gap will handle spacing */
-}
-
-
-
-.product-card .card-img-top {
-    width: 60px;
-    height: 60px;
-    object-fit: contain;
-    margin-right: 10px;
-    flex-shrink: 0;
-}
-
-.product-card .card-content-wrapper {
-    display: flex;
-    align-items: center;
+/* Category Card Styles */
+.category-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--secondary-accent);
+    border-radius: 10px;
     padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s, border-color 0.3s;
+    height: 100%; /* Ensure cards in a row have equal height */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
-.product-card .product-price {
-    flex-shrink: 0;
-    margin-left: 10px;
-    text-align: right;
-    font-weight: bold;
-    color: var(--success-color, #28a745);
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
+
+.category-card.selected {
+    background-color: var(--primary-accent);
+    color: white;
+    border-color: var(--primary-accent);
+}
+
+.category-card-img {
+    width: 50px; /* Adjust as needed */
+    height: 50px; /* Adjust as needed */
+    object-fit: contain;
+    margin-bottom: 5px;
+}
+
+.category-card-title {
+    font-size: 0.9em;
+    font-weight: bold;
+    margin-bottom: 0;
+}
+
+/* Responsive adjustments for category cards */
+@media (max-width: 767px) {
+    .category-card {
+        padding: 5px; /* Further reduce padding to decrease height */
+    }
+
+    .category-card .card-body {
+        padding: 0; /* Remove default padding from Bootstrap's card-body */
+    }
+
+    .category-card-img {
+        width: 32px; /* Smaller image */
+        height: 32px;
+        margin-bottom: 4px; /* Less space below image */
+    }
+
+    .category-card-title {
+        font-size: 0.7em; /* Smaller text to fit */
+        line-height: 1.1; /* Tighter line height for the text */
+    }
+}
+
+/* Game Card Styles for games_landing.php */
+.game-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.game-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.game-card .card-body {
+    padding: 1rem; /* Reduce padding inside the card */
+}
+
+.game-card .card-title {
+    font-size: 1.1rem; /* Make title text smaller */
+    margin-bottom: 0.25rem;
+}
+
 
 /* Accessibility focus styles */
 .nav-link:focus,
-.btn:focus {
+.btn:focus,
+.category-card:focus {
     outline: 2px dashed var(--primary-accent);
     outline-offset: 2px;
 }

@@ -25,40 +25,108 @@ document.addEventListener("DOMContentLoaded", function () {
   let finalPrice = 0; // Declare finalPrice globally
 
   // Function to restrict input to numbers
-  const restrictToNumbers = (event) => {
-    if (event.data !== null && !/^[0-9]$/.test(event.data)) {
-      event.preventDefault();
-    }
+  const sanitizeNumericInput = (event) => {
+    // Replaces any character that is not a digit with an empty string.
+    // This allows pasting numbers and cleans up any non-numeric characters automatically.
+    event.target.value = event.target.value.replace(/[^0-9]/g, '');
   };
 
   // Attach event listeners for number restriction
   if (useridInput) {
-    useridInput.addEventListener('beforeinput', restrictToNumbers);
+    useridInput.addEventListener('input', sanitizeNumericInput);
   }
 
   if (zoneidInput) {
-    zoneidInput.addEventListener('beforeinput', restrictToNumbers);
+    zoneidInput.addEventListener('input', sanitizeNumericInput);
   }
 
   // Load products on page load
   loadProducts();
 
-  // Add event listeners to category buttons
-  document.querySelectorAll('.btn-group button').forEach(button => {
-    button.addEventListener('click', function() {
-      // Remove active and btn-primary classes, add btn-outline-primary to all buttons
-      document.querySelectorAll('.btn-group button').forEach(btn => {
-        btn.classList.remove('active');
-        btn.classList.remove('btn-primary');
-        btn.classList.add('btn-outline-primary');
+  // Category data with images
+  const categories = [
+    { id: 'diamonds', name: 'Diamonds', image: 'diamond.webp' },
+    { id: 'weekly_pass', name: 'Weekly Pass', image: 'weekly_pass.avif' },
+    { id: 'twilight_pass', name: 'Twilight Pass', image: 'twilight_pass.jpg' },
+    { id: 'double_diamonds', name: 'Double Diamonds', image: 'double_diamonds.avif' }
+  ];
+
+  // Display category cards
+  function displayCategories() {
+    const categoryContainer = document.getElementById('category-cards-container');
+    if (!categoryContainer) return;
+
+    categoryContainer.innerHTML = ''; // Clear existing content
+
+    categories.forEach(category => {
+      const categoryCard = document.createElement('div');
+      categoryCard.className = 'col';
+      categoryCard.innerHTML = `
+        <div class="card h-100 category-card" data-category="${category.id}">
+          <img src="${BASE_URL}/assets/${category.image}" class="card-img-top category-card-img" alt="${category.name}">
+          <div class="card-body">
+            <h5 class="card-title category-card-title">${category.name}</h5>
+          </div>
+        </div>
+      `;
+      categoryContainer.appendChild(categoryCard);
+
+      categoryCard.addEventListener('click', () => {
+        // Remove 'selected' class from all category cards
+        document.querySelectorAll('.category-card').forEach(card => {
+          card.classList.remove('selected');
+        });
+        // Add 'selected' class to the clicked card
+        categoryCard.querySelector('.category-card').classList.add('selected');
+        filterAndDisplayProducts(category.id);
       });
-      // Add active and btn-primary classes, remove btn-outline-primary from the clicked button
-      this.classList.add('active');
-      this.classList.add('btn-primary');
-      this.classList.remove('btn-outline-primary');
-      const category = this.dataset.category;
-      filterAndDisplayProducts(category);
     });
+
+    // Select the first category by default
+    if (categories.length > 0) {
+      const firstCategoryCard = categoryContainer.querySelector('.category-card');
+      if (firstCategoryCard) {
+        firstCategoryCard.classList.add('selected');
+      }
+    }
+  }
+
+  // Call displayCategories after products are loaded
+  loadProducts().then(() => {
+    displayCategories();
+  });
+
+  // Highlight active navbar link
+  const currentPath = window.location.pathname;
+
+  // Normalize path: remove trailing slash unless it's the root path
+  const normalizePath = (path) => {
+    if (path.length > 1 && path.endsWith('/')) {
+      return path.slice(0, -1);
+    }
+    return path;
+  };
+
+  const normalizedCurrentPath = normalizePath(currentPath);
+
+  document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
+    const linkPath = new URL(link.href).pathname;
+    const normalizedLinkPath = normalizePath(linkPath);
+
+    link.classList.remove('active'); // Clear all active classes first
+
+    // Exact match after normalization
+    if (normalizedLinkPath === normalizedCurrentPath) {
+      link.classList.add('active');
+      return;
+    }
+
+    // Check for section match (e.g., /admin matches /admin/dashboard.php)
+    // Ensure the linkPath is a prefix and the next character is a '/'
+    if (normalizedCurrentPath.startsWith(normalizedLinkPath + '/')) {
+      link.classList.add('active');
+      return;
+    }
   });
 
   // Load available products
@@ -113,6 +181,24 @@ document.addEventListener("DOMContentLoaded", function () {
     30: 'large_chest.webp'
   };
 
+  // Custom descriptions for specific products
+  const customProductDescriptions = {
+    13: '78 + 8 💎',
+    23: '156 + 16 💎',
+    25: '234 + 23 💎',
+    26: '625 + 81 💎',
+    27: '1860 + 335 💎',
+    28: '3099 + 589 💎',
+    29: '4649 + 883 💎',
+    30: '7740 + 1548 💎',
+    22590: '55 + 55 💎 for first recharge!',
+    22591: '165 + 165 💎 for first recharge!',
+    22592: '275 + 275 💎 for first recharge!',
+    22593: '565 + 565 💎 for first recharge!',
+    16642: 'Weekly Pass X 1',
+    33: 'Unlock exclusive skins and rewards!'
+  };
+
   // Filter and display products based on category
   function filterAndDisplayProducts(category) {
     let productsToDisplay = allProducts.filter(product => {
@@ -152,15 +238,14 @@ document.addEventListener("DOMContentLoaded", function () {
       const outOfStockText = isOutOfStock ? '<div class="out-of-stock-overlay">Out of Stock</div>' : '';
       const imageUrl = productImageMap[product.id] ? `${BASE_URL}/assets/${productImageMap[product.id]}` : '';
       const imageTag = imageUrl ? `<img src="${imageUrl}" class="card-img-top" alt="${product.spu}">` : '';
+      const productDescription = customProductDescriptions[product.id] || product.description || 'Diamond Pack';
 
       productCard.innerHTML = `
         <div class="card h-100 product-card ${outOfStockClass}">
-          <div class="card-content-wrapper d-flex align-items-center justify-content-between">
-            ${imageTag}
-            <div class="text-group">
-              <h5 class="card-title mb-0">${product.spu}</h5>
-              <p class="card-text product-subtitle mb-0">${product.description || 'Diamond Pack'}</p>
-            </div>
+          ${imageTag}
+          <div class="card-body">
+            <h5 class="card-title mb-0">${product.spu}</h5>
+            <p class="card-text product-subtitle mb-0">${productDescription}</p>
             <p class="card-text product-price mb-0">₹${product.price}</p>
           </div>
           ${outOfStockText}

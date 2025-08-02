@@ -22,7 +22,7 @@
     </script>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
+<nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
     <div class="container-fluid">
         <a class="navbar-brand d-flex align-items-center" href="<?php echo BASE_URL; ?>/">
             <img src="<?php echo BASE_URL; ?>/assets/serdihin_logo.png?v=2" alt="Serdihin Store Logo" height="30" class="me-1">
@@ -38,23 +38,23 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link <?php echo ($_SERVER['REQUEST_URI'] == '/' || basename($_SERVER['REQUEST_URI']) == 'index.php') ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>/">Home</a>
+                    <a class="nav-link" href="<?php echo BASE_URL; ?>/">Home</a>
                 </li>
                 <?php if (isset($_SESSION['user_id'])): ?>
                 <li class="nav-item">
-                    <a class="nav-link <?php echo (strpos($_SERVER['REQUEST_URI'], '/orders/history.php') !== false) ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>/orders/history.php">My Orders</a>
+                    <a class="nav-link" href="<?php echo BASE_URL; ?>/orders/history">My Orders</a>
                 </li>
                 <?php if ($_SESSION['role'] === 'admin'): ?>
                 <li class="nav-item">
-                    <a class="nav-link <?php echo (strpos($_SERVER['REQUEST_URI'], '/admin/dashboard.php') !== false) ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>/admin/dashboard.php">Admin</a>
+                    <a class="nav-link" href="<?php echo BASE_URL; ?>/admin/dashboard">Admin</a>
                 </li>
                 <?php endif; ?>
                 <li class="nav-item">
-                    <a class="nav-link logout-link" href="<?php echo BASE_URL; ?>/auth/logout.php">Logout</a>
+                    <a class="nav-link logout-link" href="<?php echo BASE_URL; ?>/auth/logout">Logout</a>
                 </li>
                 <?php else: ?>
                 <li class="nav-item">
-                    <a class="nav-link <?php echo (strpos($_SERVER['REQUEST_URI'], '/auth/login') !== false) ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>/auth/login">Login</a>
+                    <a class="nav-link" href="<?php echo BASE_URL; ?>/auth/login">Login</a>
                 </li>
                 <?php endif; ?>
             </ul>

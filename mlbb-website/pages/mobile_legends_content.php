@@ -22,11 +22,11 @@ $page_title = 'Mobile Legends Diamond Top-Up';
                     <form id="playerForm">
                         <div class="mb-3">
                             <label for="userid" class="form-label">Player ID:</label>
-                            <input type="number" id="userid" class="form-control" required value="" placeholder="Enter Game ID">
+                            <input type="text" inputmode="numeric" pattern="[0-9]*" id="userid" class="form-control" required value="" placeholder="Enter Game ID">
                         </div>
                         <div class="mb-3">
                             <label for="zoneid" class="form-label">Zone ID:</label>
-                            <input type="number" id="zoneid" class="form-control" required value="" placeholder="Enter Server ID">
+                            <input type="text" inputmode="numeric" pattern="[0-9]*" id="zoneid" class="form-control" required value="" placeholder="Enter Server ID">
                         </div>
                         <div class="d-grid gap-2 button-group-width">
                             <?php if (!empty($_COOKIE['last_player_id'])): ?>
@@ -53,14 +53,8 @@ $page_title = 'Mobile Legends Diamond Top-Up';
                     <h2>Select Diamond Package</h2>
                 </div>
                 <div class="card-body">
-                    <div class="mb-3">
-                        <div class="btn-group category-buttons" role="group" aria-label="Product Categories">
-                            <button type="button" class="btn btn-outline-primary active" data-category="diamonds">Diamonds</button>
-                            <button type="button" class="btn btn-outline-primary" data-category="weekly_pass">Weekly Pass</button>
-                            <button type="button" class="btn btn-outline-primary" data-category="twilight_pass">Twilight Pass</button>
-                            <button type="button" class="btn btn-outline-primary" data-category="double_diamonds">Double Diamonds</button>
-                        </div>
-                    </div>
+                    <div id="category-cards-container" class="row row-cols-4 g-2 mb-3"></div>
+                    <hr class="my-4">
                     <div id="products" class="row row-cols-2 row-cols-md-2 row-cols-lg-2 g-4"></div>
                 </div>
             </div>
