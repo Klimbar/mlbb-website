@@ -419,8 +419,6 @@ input[type=number] {
 /* New styles for product card layout */
 
 
-
-
 .product-card .card-body {
     flex-grow: 1; /* Allow text content to take remaining space */
     padding: 0; /* Remove default card-body padding */
@@ -432,7 +430,6 @@ input[type=number] {
 }
 
 
-
 .product-card .product-subtitle {
     font-size: 0.85em; /* Smaller font for subtitle */
     color: #6c757d; /* A subtle grey color */
@@ -442,18 +439,30 @@ input[type=number] {
 
 /* Responsive adjustments for smaller screens */
 @media (max-width: 576px) {
-    
-    
+    .product-card {
+           padding: 5px; /* Even less padding on very small screens */
+       }
+
     .product-card .card-title,
-    
     .product-card .product-subtitle {
-        font-size: 0.75em;
+        font-size: 0.85em; /* Slightly smaller font for title */
+        white-space: normal; /* Allow text to wrap */
+        overflow-wrap: break-word; /* Break long words */
     }
+    
+    .product-card .text-group {
+        flex-grow: 1;
+        min-width: 0; /* Allow text group to shrink */
+        text-align: center;
+    }
+
+    .product-card .product-price {
+        margin-left: 5px; /* Reduce margin on small screens */
+    }
+    
 }
 
 /* Additional styles for new product card layout */
-
-
 
 
 .product-card .text-group {
@@ -463,22 +472,6 @@ input[type=number] {
 }
 
 
-
-/* Responsive adjustments for smaller screens */
-@media (max-width: 576px) {
-    .product-card {
-           padding: 5px; /* Even less padding on very small screens */
-       }
-
-    
-    .product-card .card-title {
-        font-size: 0.85em; /* Slightly smaller font for title */
-    }
-    .product-card .product-subtitle {
-        font-size: 0.7em; /* Slightly smaller font for subtitle */
-    }
-    
-}
 
 .product-card .card-img-top {
     width: 60px;
