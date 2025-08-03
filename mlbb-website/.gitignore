@@ -1,0 +1,16 @@
+
+# Composer
+/vendor/
+composer.lock
+
+# Logs
+*.log
+
+# Sensitive configuration
+config.php
+.env
+
+# IDE/OS files
+.idea/
+.vscode/
+.DS_Store

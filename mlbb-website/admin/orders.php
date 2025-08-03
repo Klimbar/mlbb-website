@@ -40,7 +40,7 @@ $orders = $db->query("
             <tbody>
                 <?php foreach ($orders as $order): ?>
                 <tr>
-                    <td><?= $order['order_id'] ?></td>
+                    <td><?= htmlspecialchars($order['order_id']) ?></td>
                     <td><?= htmlspecialchars($order['username']) ?></td>
                     <td><?= htmlspecialchars($order['product_name']) ?></td>
                     <td>₹<?= number_format($order['amount'], 2) ?></td>

@@ -1,5 +1,7 @@
 <?php
 
+// On a production server, it's recommended to turn off error display
+ini_set('display_errors', 0);
 // Enable error logging
 ini_set('log_errors', 1);
 ini_set('error_log', __DIR__ . '/bootstrap_errors.log');
