@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../includes/db.php';
-require_once __DIR__ . '/../config.php'; // For BASE_URL if needed for logging/redirects
+require_once __DIR__ . '/../bootstrap.php';
 
 // This script is intended to be run via cron or manually by an admin.
 // It synchronizes order_status with payment_status for pending orders.

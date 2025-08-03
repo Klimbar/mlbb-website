@@ -1,10 +1,6 @@
 <?php
-
-// Redirect if already logged in
-if (isset($_SESSION['user_id'])) {
-    header("Location: " . BASE_URL . "/");
-    exit();
-}
+require_once __DIR__ . '/../bootstrap.php';
+require_once __DIR__ . '/../includes/db.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Validate CSRF token

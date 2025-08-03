@@ -1,19 +1,24 @@
 <?php
 
 class Database {
-    private $host = DB_HOST;
-    private $user = DB_USER;
-    private $pass = DB_PASS;
-    private $dbname = DB_NAME;
+    private $host;
+    private $user;
+    private $pass;
+    private $dbname;
     private $conn;
 
     public function __construct() {
+        $this->host = DB_HOST;
+        $this->user = DB_USER;
+        $this->pass = DB_PASS;
+        $this->dbname = DB_NAME;
+
         try {
             $this->conn = new mysqli($this->host, $this->user, $this->pass, $this->dbname);
             $this->conn->query("SET time_zone = '+05:30'");
         } catch (Exception $e) {
             // Log the error to a file
-            file_put_contents(__DIR__ . '/../../db_errors.log', $e->getMessage() . "\n", FILE_APPEND);
+            error_log("Database connection failed: " . $e->getMessage() . ", Host: " . $this->host . ", User: " . $this->user . ", DB: " . $this->dbname);
             // Prevent the application from continuing without a database connection
             die("Database connection failed. Please check the logs for details.");
         }

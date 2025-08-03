@@ -1,6 +1,7 @@
 <?php
+require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/../includes/db.php';
-require_once __DIR__ . '/../config.php'; // Ensure session_start() is called
+require_once __DIR__ . '/../bootstrap.php';
 
 try {
     $db = new Database();

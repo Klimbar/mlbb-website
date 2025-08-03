@@ -1,5 +1,11 @@
 <?php
 
+// Redirect logged-in users from auth pages
+if (is_logged_in() && in_array(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), ['/auth/login', '/auth/register', '/auth/forgot_password'])) {
+    header('Location: ' . BASE_URL . '/');
+    exit;
+}
+
 // Define redirects for base paths that should update the browser URL
 $redirects = [
     '/auth' => '/auth/login',
@@ -26,6 +32,7 @@ $routes = [
     '/orders/history' => 'orders/history',
     '/payments/callback' => 'payments/callback',
     '/payments/process' => 'payments/process',
+    '/auth/login_handler' => 'auth/login_handler',
 
     // Add static routes for details pages to handle query parameters
     '/admin/order-details' => 'admin/order-details',

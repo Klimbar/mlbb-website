@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/../bootstrap.php';
+require_once __DIR__ . '/../includes/db.php';
 
 error_log('reset_password.php: Script started.', 0);
 
@@ -77,6 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="mb-3">
                             <label for="confirm_password" class="form-label">Confirm New Password</label>
                             <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                            <div class="invalid-feedback">Passwords do not match.</div>
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Reset Password</button>
                     </form>
@@ -85,5 +88,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirm_password');
+
+    function validatePasswords() {
+        if (confirmPassword.value.length > 0) {
+            if (password.value !== confirmPassword.value) {
+                confirmPassword.setCustomValidity('Passwords do not match.');
+                confirmPassword.classList.add('is-invalid');
+            } else {
+                confirmPassword.setCustomValidity('');
+                confirmPassword.classList.remove('is-invalid');
+            }
+        } else {
+            confirmPassword.setCustomValidity('');
+            confirmPassword.classList.remove('is-invalid');
+        }
+    }
+
+    password.addEventListener('input', validatePasswords);
+    confirmPassword.addEventListener('input', validatePasswords);
+});
+</script>
 
 

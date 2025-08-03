@@ -5,7 +5,6 @@ require_once __DIR__ . '/../bootstrap.php'; // Include bootstrap to handle sessi
 ob_clean();
 
 require_once __DIR__ . '/../includes/db.php';
-require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../includes/api_helpers.php'; // We'll need this for API calls
 
 header('Content-Type: application/json');

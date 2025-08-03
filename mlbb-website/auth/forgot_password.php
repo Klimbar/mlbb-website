@@ -1,10 +1,9 @@
 <?php
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
-// If the user is already logged in, redirect to the home page
-if (is_logged_in()) {
-    header('Location: ' . BASE_URL . '/');
-    exit;
-}
+require_once __DIR__ . '/../bootstrap.php';
+require_once __DIR__ . '/../includes/db.php';
 
 $page_title = 'Forgot Password';
 

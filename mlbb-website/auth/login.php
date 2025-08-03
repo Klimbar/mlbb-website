@@ -1,10 +1,6 @@
 <?php
-
-// Redirect if already logged in
-if (is_logged_in()) {
-    header("Location: " . BASE_URL . "/");
-    exit();
-}
+require_once __DIR__ . '/../bootstrap.php';
+require_once __DIR__ . '/../includes/db.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Validate CSRF token
@@ -47,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="alert alert-danger mt-3"><?php echo $_SESSION['error_message']; unset($_SESSION['error_message']); ?></div>
     <?php endif; ?>
     
-    <form method="POST">
+    <form method="POST" action="<?php echo BASE_URL; ?>/auth/login_handler">
         <input type="hidden" name="csrf_token" value="<?= generateCSRFToken() ?>">
         
         <div class="mb-3">
