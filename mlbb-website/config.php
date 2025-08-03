@@ -4,7 +4,7 @@
 // This will dynamically determine the base URL including protocol and domain.
 // IMPORTANT: When you deploy to a production server with a fixed domain,
 // you should replace this dynamic calculation with your actual domain:
-define('BASE_URL', 'https://c8d1a5b4bb94.ngrok-free.app');
+define('BASE_URL', 'https://084792d36721.ngrok-free.app');
 
 
 // Database and API Configuration

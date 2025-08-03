@@ -100,6 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="mb-3">
             <label for="confirm_password" class="form-label">Confirm Password</label>
             <input type="password" id="confirm_password" name="confirm_password" class="form-control" required>
+            <div class="invalid-feedback">Passwords do not match.</div>
         </div>
         
         <button type="submit" class="btn btn-primary">Register</button>
@@ -107,3 +108,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     <p>Already have an account? <a href="<?php echo BASE_URL; ?>/auth/login">Login here</a></p>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirm_password');
+
+    function validatePasswords() {
+        // This check prevents the validation message from appearing prematurely.
+        // The error will only show if the user has typed something in the
+        // confirm password field and it doesn't match the password field.
+        if (confirmPassword.value.length > 0) {
+            if (password.value !== confirmPassword.value) {
+                confirmPassword.setCustomValidity('Passwords do not match.');
+                confirmPassword.classList.add('is-invalid');
+            } else {
+                confirmPassword.setCustomValidity('');
+                confirmPassword.classList.remove('is-invalid');
+            }
+        } else {
+            // If the confirm password field is empty, it's not invalid.
+            confirmPassword.setCustomValidity('');
+            confirmPassword.classList.remove('is-invalid');
+        }
+    }
+
+    password.addEventListener('input', validatePasswords);
+    confirmPassword.addEventListener('input', validatePasswords);
+});
+</script>

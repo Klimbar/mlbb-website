@@ -46,9 +46,9 @@ document.addEventListener("DOMContentLoaded", function () {
   // Category data with images
   const categories = [
     { id: 'diamonds', name: 'Diamonds', image: 'diamond.webp' },
-    { id: 'weekly_pass', name: 'Weekly Pass', image: 'weekly_pass.avif' },
+    { id: 'weekly_pass', name: 'Weekly Pass', image: 'weekly_pass.webp' },
     { id: 'twilight_pass', name: 'Twilight Pass', image: 'twilight_pass.jpg' },
-    { id: 'double_diamonds', name: 'Double Diamonds', image: 'double_diamonds.avif' }
+    { id: 'double_diamonds', name: '2 x First Recharge Bonus', image: 'first_recharge.png' }
   ];
 
   // Display category cards
@@ -170,7 +170,7 @@ document.addEventListener("DOMContentLoaded", function () {
     22592: 'double_diamonds.avif',
     22593: 'double_diamonds.avif',
     33: 'twilight_pass.jpg',
-    16642: 'weekly_pass.avif',
+    16642: 'weekly_pass.webp',
     13: 'few_diamonds.webp',
     23: 'few_diamonds.webp',
     25: 'many_diamonds.webp',
@@ -191,11 +191,11 @@ document.addEventListener("DOMContentLoaded", function () {
     28: '3099 + 589 💎',
     29: '4649 + 883 💎',
     30: '7740 + 1548 💎',
-    22590: '55 + 55 💎 for first recharge!',
-    22591: '165 + 165 💎 for first recharge!',
-    22592: '275 + 275 💎 for first recharge!',
-    22593: '565 + 565 💎 for first recharge!',
-    16642: 'Weekly Pass X 1',
+    22590: '55 + 55 💎 first recharge!',
+    22591: '165 + 165 💎 first recharge!',
+    22592: '275 + 275 💎 first recharge!',
+    22593: '565 + 565 💎 first recharge!',
+    16642: 'Weekly Pass x 1',
     33: 'Unlock exclusive skins and rewards!'
   };
 
