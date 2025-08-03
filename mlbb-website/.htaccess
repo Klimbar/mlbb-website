@@ -17,6 +17,11 @@
     Options -Indexes
     RewriteEngine On
 
+    # Force HTTPS (works behind proxy)
+    RewriteCond %{HTTPS} off
+    RewriteCond %{HTTP:X-Forwarded-Proto} !https
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
     # Externally redirect direct requests for .php files to clean URLs
     RewriteCond %{THE_REQUEST} \s/+(.+?)\.php[\s?] [NC]
     RewriteRule ^ /%1 [R=301,L]
@@ -31,6 +36,12 @@
     RewriteCond %{REQUEST_URI} !^/api\.php$
     RewriteRule ^(.*)$ index.php [L,QSA]
 </IfModule>
+
+# Custom Error Pages
+ErrorDocument 403 /403.html
+ErrorDocument 404 /404.html
+ErrorDocument 500 /500.html
+
 <FilesMatch \.php$>
     SetHandler application/x-httpd-php
 </FilesMatch>
