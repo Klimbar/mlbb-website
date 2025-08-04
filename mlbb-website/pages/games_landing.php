@@ -25,7 +25,7 @@ $page_title = 'Games';
         <div class="col-lg-3 col-md-4 col-6 mb-4">
             <a href="<?php echo BASE_URL; ?>/mobile_legends" class="card-link">
                 <div class="card h-100 shadow-sm game-card" style="cursor: pointer;">
-                    <img src="<?php echo BASE_URL; ?>/assets/mlbb_card.jpeg" class="card-img-top" alt="Mobile Legends: Bang Bang">
+                    <img src="<?php echo BASE_URL; ?>/assets/mlbb_card.webp" class="card-img-top" alt="Mobile Legends: Bang Bang">
                     <div class="card-body text-center">
                         <h5 class="card-title">Mobile Legends: Bang Bang</h5>
                     </div>

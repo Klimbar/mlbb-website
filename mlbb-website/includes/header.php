@@ -25,7 +25,7 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
     <div class="container-fluid">
         <a class="navbar-brand d-flex align-items-center" href="<?php echo BASE_URL; ?>/">
-            <img src="<?php echo BASE_URL; ?>/assets/serdihin_logo.png?v=2" alt="Serdihin Store Logo" height="30" class="me-1">
+            <img src="<?php echo BASE_URL; ?>/assets/serdihin_logo.webp?v=2" alt="Serdihin Store Logo" height="30" class="me-1">
             Serdihin Store
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">

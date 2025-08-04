@@ -5,13 +5,17 @@ require_once __DIR__ . '/../includes/api_helpers.php';
 
 try {
     // 1. Get the order_id from the request (works for both GET and POST)
+    // Also, determine if this is a server-to-server webhook call or a user redirect.
+    // We'll assume a webhook is a POST request containing the 'utr' (Unique Transaction Reference).
     $order_id = $_REQUEST['order_id'] ?? null;
     $webhook_utr = $_POST['utr'] ?? null;
+    $is_webhook = ($_SERVER['REQUEST_METHOD'] === 'POST' && $webhook_utr !== null);
 
     if (!$order_id) {
         http_response_code(400);
         die("Invalid callback: Missing order_id.");
     }
+
 
     $db = new Database();
 
@@ -118,9 +122,16 @@ try {
         );
     }
 
-    // 5. Redirect user to their order details page
-    header("Location: " . BASE_URL . "/orders/details?id=$order_db_id");
-    exit;
+    // 5. Respond appropriately
+    if ($is_webhook) {
+        // Acknowledge the webhook call successfully
+        http_response_code(200);
+        echo "OK: Callback processed.";
+    } else {
+        // Redirect the user to their order details page
+        header("Location: " . BASE_URL . "/orders/details?id=$order_db_id");
+    }
+    exit; // Always exit after responding
 
 } catch (Exception $e) {
     error_log("Callback Exception: " . $e->getMessage());
