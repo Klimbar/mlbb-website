@@ -25,7 +25,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_product'])) {
             "UPDATE products SET name = ?, selling_price = ?, is_out_of_stock = ? WHERE id = ?",
             [$name, $sellingPrice, $isOutOfStock, $productId]
         );
-        $message = '<div class="alert alert-success">Product updated successfully!</div>';
+
+        // Clear the product cache so changes appear immediately on the frontend
+        $cacheFile = __DIR__ . '/../cache/products.json';
+        if (file_exists($cacheFile)) {
+            unlink($cacheFile);
+        }
+        $message = '<div class="alert alert-success">Product updated successfully! The cache has been cleared.</div>';
+
     } catch (Exception $e) {
         $message = '<div class="alert alert-danger">Error updating product: ' . $e->getMessage() . '</div>';
     }
@@ -105,5 +112,3 @@ $products = $db->query("SELECT * FROM products ORDER BY price ASC")->fetch_all(M
     ?>
 </div> <!-- Close container -->
 </div> <!-- Close main-content -->
-
-

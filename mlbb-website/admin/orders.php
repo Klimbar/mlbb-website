@@ -11,12 +11,24 @@ if ($_SESSION['role'] !== 'admin') {
 }
 
 $db = new Database();
+
+// --- Pagination Logic ---
+$page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
+$limit = 15; // Number of orders per page
+$offset = ($page - 1) * $limit;
+
+// Get total number of orders for calculating total pages
+$total_orders_result = $db->query("SELECT COUNT(*) as count FROM orders")->fetch_assoc();
+$total_orders = $total_orders_result['count'];
+$total_pages = ceil($total_orders / $limit);
+
 $orders = $db->query("
     SELECT o.*, u.username
     FROM orders o
     JOIN users u ON o.user_id = u.id
     ORDER BY o.created_at DESC
-")->fetch_all(MYSQLI_ASSOC);
+    LIMIT ? OFFSET ?
+", [$limit, $offset])->fetch_all(MYSQLI_ASSOC);
 ?>
 
 <div class="container main-content">
@@ -74,7 +86,26 @@ $orders = $db->query("
                 <?php endforeach; ?>
             </tbody>
         </table>
+
+        <!-- Pagination Controls -->
+        <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center">
+                <?php if ($page > 1): ?>
+                    <li class="page-item">
+                        <a class="page-link" href="<?php echo BASE_URL; ?>/admin/orders?page=<?= $page - 1 ?>" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
+                    </li>
+                <?php endif; ?>
+
+                <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                    <li class="page-item <?= ($i == $page) ? 'active' : '' ?>"><a class="page-link" href="<?php echo BASE_URL; ?>/admin/orders?page=<?= $i ?>"><?= $i ?></a></li>
+                <?php endfor; ?>
+
+                <?php if ($page < $total_pages): ?>
+                    <li class="page-item">
+                        <a class="page-link" href="<?php echo BASE_URL; ?>/admin/orders?page=<?= $page + 1 ?>" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
+                    </li>
+                <?php endif; ?>
+            </ul>
+        </nav>
     </div>
 </div>
-
-

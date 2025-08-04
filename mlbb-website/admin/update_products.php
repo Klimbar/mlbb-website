@@ -1,7 +1,6 @@
 <?php
 require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/../includes/db.php';
-require_once __DIR__ . '/../bootstrap.php';
 
 try {
     $db = new Database();
@@ -53,6 +52,7 @@ if ($response && isset($response['data']['product'])) {
             INSERT INTO products (product_id, name, api_pack_name, price, selling_price)
             VALUES (?, ?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE
+                name = VALUES(name),
                 api_pack_name = VALUES(api_pack_name),
                 price = VALUES(price)
         ", [
@@ -64,9 +64,15 @@ if ($response && isset($response['data']['product'])) {
         ]);
     }
 
-    $_SESSION['admin_message'] = '<div class="alert alert-success">Products updated successfully!</div>';
+    // Clear the product cache so changes appear immediately on the frontend
+    $cacheFile = __DIR__ . '/../cache/products.json';
+    if (file_exists($cacheFile)) {
+        unlink($cacheFile);
+    }
+
+    $_SESSION['admin_message'] = '<div class="alert alert-success">Products updated successfully! The product cache has been cleared.</div>';
 } else {
-    $_SESSION['admin_message'] = '<div class="alert alert-danger">Failed to fetch products from API.</div>';
+    $_SESSION['admin_message'] = '<div class="alert alert-danger">Failed to fetch products from the API. The cache was not cleared.</div>';
 }
 } catch (Exception $e) {
     $_SESSION['admin_message'] = '<div class="alert alert-danger">Error updating products: ' . $e->getMessage() . '</div>';

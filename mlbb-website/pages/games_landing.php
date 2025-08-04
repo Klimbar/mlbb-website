@@ -28,7 +28,6 @@ $page_title = 'Games';
                     <img src="<?php echo BASE_URL; ?>/assets/mlbb_card.jpeg" class="card-img-top" alt="Mobile Legends: Bang Bang">
                     <div class="card-body text-center">
                         <h5 class="card-title">Mobile Legends: Bang Bang</h5>
-                        <p class="card-text">Top-up Diamonds</p>
                     </div>
                 </div>
             </a>

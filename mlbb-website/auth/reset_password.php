@@ -10,7 +10,7 @@ error_log('reset_password.php: Received token: ' . $token, 0);
 if (!$token) {
     $_SESSION['error_message'] = 'Invalid password reset token.';
     error_log('reset_password.php: No token received.', 0);
-    header('Location: /auth/forgot_password.php');
+    header('Location: ' . BASE_URL . '/auth/forgot_password');
     exit;
 }
 
@@ -21,7 +21,7 @@ $reset_request = $result->fetch_assoc();
 if (!$reset_request) {
     $_SESSION['error_message'] = 'Invalid or expired password reset token.';
     error_log('reset_password.php: Token not found or expired in DB for token: ' . $token, 0);
-    header('Location: /auth/forgot_password.php');
+    header('Location: ' . BASE_URL . '/auth/forgot_password');
     exit;
 }
 error_log('reset_password.php: Token found and valid for email: ' . $reset_request['email'], 0);
@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         error_log('reset_password.php: Password reset entry deleted for email: ' . $reset_request['email'], 0);
 
         $_SESSION['success_message'] = 'Your password has been reset successfully. You can now log in.';
-        header('Location: /auth/login.php');
+        header('Location: ' . BASE_URL . '/auth/login');
         exit;
     }
 }
@@ -113,5 +113,3 @@ document.addEventListener('DOMContentLoaded', function () {
     confirmPassword.addEventListener('input', validatePasswords);
 });
 </script>
-
-

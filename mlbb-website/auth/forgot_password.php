@@ -8,6 +8,13 @@ require_once __DIR__ . '/../includes/db.php';
 $page_title = 'Forgot Password';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Validate CSRF token for security
+    if (!isset($_POST['csrf_token']) || !validateCSRFToken($_POST['csrf_token'])) {
+        $_SESSION['error_message'] = 'Invalid request. Please try again.';
+        header('Location: ' . BASE_URL . '/auth/forgot_password');
+        exit;
+    }
+
     $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -25,7 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 [$email, $token, $expires_at, $token, $expires_at]
             );
 
-            $reset_link = BASE_URL . '/auth/reset_password.php?token=' . $token;
+            // Use the pretty URL defined in routes.php for consistency
+            $reset_link = BASE_URL . '/auth/reset_password?token=' . $token;
             
             $mail = new PHPMailer(true);
 
@@ -62,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
     // Redirect to clear POST data and display messages
-    header('Location: forgot_password.php');
+    header('Location: ' . BASE_URL . '/auth/forgot_password');
     exit;
 }
 ?>
@@ -75,6 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <h2 class="card-title text-center">Forgot Password</h2>
                     <p class="text-center">Enter your email address and we will send you a link to reset your password.</p>
                     <form method="post">
+                        <input type="hidden" name="csrf_token" value="<?= generateCSRFToken() ?>">
                         <div class="mb-3">
                             <label for="email" class="form-label">Email address</label>
                             <input type="email" class="form-control" id="email" name="email" required>
@@ -92,5 +101,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 </div>
-
-

@@ -5,12 +5,26 @@ require_once __DIR__ . '/../includes/auth-check.php';
 
 
 $db = new Database();
+$user_id = $_SESSION['user_id'];
+
+// --- Pagination Logic ---
+$page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
+$limit = 15; // Number of orders per page
+$offset = ($page - 1) * $limit;
+
+// Get total number of orders for the current user
+$total_orders_result = $db->query("SELECT COUNT(*) as count FROM orders WHERE user_id = ?", [$user_id])->fetch_assoc();
+$total_orders = $total_orders_result['count'];
+$total_pages = ceil($total_orders / $limit);
+
+// Fetch paginated orders for the current user
 $result = $db->query("
     SELECT o.* 
     FROM orders o
     WHERE o.user_id = ?
     ORDER BY o.created_at DESC
-", [$_SESSION['user_id']]);
+    LIMIT ? OFFSET ?
+", [$user_id, $limit, $offset]);
 
 $orders = $result->fetch_all(MYSQLI_ASSOC);
 ?>
@@ -73,6 +87,26 @@ $orders = $result->fetch_all(MYSQLI_ASSOC);
                 </tbody>
             </table>
         </div>
+
+        <!-- Pagination Controls -->
+        <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center">
+                <?php if ($page > 1): ?>
+                    <li class="page-item">
+                        <a class="page-link" href="<?php echo BASE_URL; ?>/orders/history?page=<?= $page - 1 ?>" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
+                    </li>
+                <?php endif; ?>
+
+                <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                    <li class="page-item <?= ($i == $page) ? 'active' : '' ?>"><a class="page-link" href="<?php echo BASE_URL; ?>/orders/history?page=<?= $i ?>"><?= $i ?></a></li>
+                <?php endfor; ?>
+
+                <?php if ($page < $total_pages): ?>
+                    <li class="page-item">
+                        <a class="page-link" href="<?php echo BASE_URL; ?>/orders/history?page=<?= $page + 1 ?>" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
+                    </li>
+                <?php endif; ?>
+            </ul>
+        </nav>
     <?php endif; ?>
 </div>
-

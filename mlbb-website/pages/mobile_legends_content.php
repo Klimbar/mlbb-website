@@ -1,5 +1,5 @@
 <?php
-$page_title = 'Mobile Legends Diamond Top-Up';
+$page_title = 'Mobile Legends: Bang Bang';
 ?>
 <style>
 .welcome-banner {
@@ -21,7 +21,7 @@ $page_title = 'Mobile Legends Diamond Top-Up';
         </div>
     <?php endif; ?>
   <!-- Main content -->
-    <h1 id="page-title">Mobile Legends Diamond Top-Up</h1>
+    <h1 id="page-title">Mobile Legends: Bang Bang</h1>
     <div class="row">
         <div class="col-12">
             <div class="card mb-4">

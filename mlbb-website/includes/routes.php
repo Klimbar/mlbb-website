@@ -28,6 +28,7 @@ $routes = [
     '/admin/manage-products' => 'admin/manage-products',
     '/admin/orders' => 'admin/orders',
     '/admin/sync_order_payment_status' => 'admin/sync_order_payment_status',
+
     '/admin/update_products' => 'admin/update_products',
     '/orders/history' => 'orders/history',
     '/payments/callback' => 'payments/callback',
