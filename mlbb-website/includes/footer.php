@@ -10,7 +10,7 @@
                 </a>
             </div>
         </div>
-        <p class="mt-3">&copy; <?= date('Y') ?> Serdihin Store. All Rights Reserved.</p>
+        <p class="mt-3">&copy; <?= date('Y') ?> Serdihin. All Rights Reserved.</p>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous" defer></script>
     <script src="<?php echo BASE_URL; ?>/js/script.js?v=2.0.0" defer></script>

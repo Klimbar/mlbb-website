@@ -6,8 +6,8 @@
     <?php if (isset($_SESSION['user_id'])): // Only add CSRF token for logged-in users ?>
     <meta name="csrf-token" content="<?= generateCSRFToken() ?>">
     <?php endif; ?>
-    <meta name="description" content="Top-up Mobile Legends: Bang Bang diamonds instantly and safely on Serdihin Store. India's trusted site for MLBB top-ups with secure payments and fast delivery.">
-    <title><?php echo isset($page_title) ? htmlspecialchars($page_title) . ' | Serdihin Store' : 'Get MLBB Diamonds Safely | Serdihin – India\'s Trusted Top-Up Site'; ?></title>
+    <meta name="description" content="Top-up Mobile Legends: Bang Bang diamonds instantly and safely on serdihin.com. India's trusted site for MLBB top-ups with secure payments and fast delivery.">
+    <title><?php echo isset($page_title) ? htmlspecialchars($page_title) . ' | Serdihin' : 'Get MLBB Diamonds Safely | Serdihin – India\'s Trusted Top-Up Site'; ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="icon" type="image/png" sizes="32x32" href="<?php echo BASE_URL; ?>/assets/favicon-32x32.png?v=2">
     <link rel="apple-touch-icon" sizes="180x180" href="<?php echo BASE_URL; ?>/assets/apple-touch-icon.png?v=2">
@@ -28,9 +28,9 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
     <div class="container-fluid">
-        <a class="navbar-brand d-flex align-items-center" href="<?php echo BASE_URL; ?>/">
-            <img src="<?php echo BASE_URL; ?>/assets/serdihin_logo.webp?v=2" alt="Serdihin Store Logo" height="30" class="me-1">
-            Serdihin Store
+        < class="navbar-brand d-flex align-items-center" href="<?php echo BASE_URL; ?>/">
+            <img src="<?php echo BASE_URL; ?>/assets/serdihin_logo.webp?v=2" alt="Serdihin Logo" height="30" class="me-1">
+            <strong>SERDIHIN</strong>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <div class="hamburger-icon">
