@@ -95,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'user_token' => PAYMENT_API_KEY,
             'amount' => $formatted_final_price, // Use the formatted string amount
             'order_id' => $order_id,
-            'redirect_url' => PAYMENT_REDIRECT_URL,
+            'redirect_url' => PAYMENT_REDIRECT_URL . '?order_id=' . $order_id,
             'customer_mobile' => '', // Add customer mobile if available
             'customer_name' => $_SESSION['username'],
             'remark1' => 'MLBB Diamonds',
