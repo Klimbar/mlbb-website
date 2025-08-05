@@ -1,3 +1,4 @@
+<?php $page_title = "Welcome to Serdihin"; ?>
 <style>
 .welcome-banner {
     background-color: var(--primary-accent);

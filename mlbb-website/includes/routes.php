@@ -44,6 +44,23 @@ $routes = [
     '/orders/details/(\d+)' => 'orders/details',
 ];
 
+// Define page titles, mapping them to the file path from the routes array
+$page_titles = [
+    'pages/games_landing' => 'Welcome to Serdihin',
+    'auth/login' => 'Login',
+    'auth/register' => 'Register',
+    'auth/forgot_password' => 'Forgot Password',
+    'auth/reset_password' => 'Reset Password',
+    'pages/mobile_legends_content' => 'Mobile Legends: Bang Bang',
+    'admin/dashboard' => 'Admin Dashboard',
+    'admin/manage-products' => 'Manage Products',
+    'admin/orders' => 'Manage Orders',
+    'orders/history' => 'My Order History',
+    'admin/order-details' => 'Order Details',
+    'orders/details' => 'Order Details',
+];
+
+
 // Get the current URI path
 $request_uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $script_name = dirname($_SERVER['SCRIPT_NAME']);
@@ -92,6 +109,7 @@ if (isset($redirects[$request_uri])) {
 
 // Route the request
 $route_found = false;
+$page_title = ''; // Initialize page title
 
 // Check for dynamic routes first
 foreach ($routes as $route => $file) {
@@ -109,6 +127,9 @@ foreach ($routes as $route => $file) {
             }
 
             $route_file = $file;
+            if (isset($page_titles[$route_file])) {
+                $page_title = $page_titles[$route_file];
+            }
             require_once __DIR__ . '/header.php';
             require_once __DIR__ . '/../' . $route_file . '.php';
             require_once __DIR__ . '/footer.php';
@@ -121,6 +142,9 @@ foreach ($routes as $route => $file) {
 // If no dynamic route matched, check for static routes
 if (!$route_found && array_key_exists($request_uri, $routes)) {
     $route_file = $routes[$request_uri];
+    if (isset($page_titles[$route_file])) {
+        $page_title = $page_titles[$route_file];
+    }
     // Exclude header/footer for API routes
     if ($request_uri === '/api' || strpos($route_file, 'payments/') === 0) {
         require_once __DIR__ . '/../' . $route_file . '.php';
