@@ -12,6 +12,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $email = trim($_POST['email']);
     $password = $_POST['password'];
+
+    // Add explicit server-side validation for the email format
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $_SESSION['error_message'] = "Invalid email format provided.";
+        header("Location: " . BASE_URL . "/auth/login");
+        exit();
+    }
     
     $db = new Database();
     $result = $db->query("SELECT * FROM users WHERE email = ?", [$email]);

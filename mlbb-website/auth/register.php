@@ -35,12 +35,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errors[] = "Passwords do not match";
         }
         
-        // Check if email exists
-        $db = new Database();
-        $result = $db->query("SELECT id FROM users WHERE email = ?", [$email]);
-        
-        if ($result->num_rows > 0) {
-            $errors[] = "Email already registered";
+        // Only connect to the database if initial validations pass
+        if (empty($errors)) {
+            // Check if email exists
+            $db = new Database();
+            $result = $db->query("SELECT id FROM users WHERE email = ?", [$email]);
+            
+            if ($result->num_rows > 0) {
+                $errors[] = "An account with this email address already exists.";
+            }
         }
         
         if (empty($errors)) {
@@ -105,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <p>Already have an account? <a href="<?php echo BASE_URL; ?>/auth/login">Login here</a></p>
 </div>
 
-<script>
+<script nonce="<?= htmlspecialchars($nonce) ?>">
 document.addEventListener('DOMContentLoaded', function () {
     const password = document.getElementById('password');
     const confirmPassword = document.getElementById('confirm_password');

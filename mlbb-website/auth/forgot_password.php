@@ -102,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </div>
 
-<script>
+<script nonce="<?= htmlspecialchars($nonce) ?>">
 document.addEventListener('DOMContentLoaded', function () {
     const form = document.querySelector('form');
     const submitButton = form.querySelector('button[type="submit"]');

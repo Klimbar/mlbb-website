@@ -89,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </div>
 
-<script>
+<script nonce="<?= htmlspecialchars($nonce) ?>">
 document.addEventListener('DOMContentLoaded', function () {
     const password = document.getElementById('password');
     const confirmPassword = document.getElementById('confirm_password');

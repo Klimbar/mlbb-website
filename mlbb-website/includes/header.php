@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Serdihin Store</title>
+    <?php if (isset($_SESSION['user_id'])): // Only add CSRF token for logged-in users ?>
+    <meta name="csrf-token" content="<?= generateCSRFToken() ?>">
+    <?php endif; ?>
+    <meta name="description" content="Top-up Mobile Legends: Bang Bang diamonds instantly and safely on Serdihin Store. India's trusted site for MLBB top-ups with secure payments and fast delivery.">
+    <title><?php echo isset($page_title) ? htmlspecialchars($page_title) . ' | Serdihin Store' : 'Get MLBB Diamonds Safely | Serdihin – India\'s Trusted Top-Up Site'; ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="icon" type="image/png" sizes="32x32" href="<?php echo BASE_URL; ?>/assets/favicon-32x32.png?v=2">
     <link rel="apple-touch-icon" sizes="180x180" href="<?php echo BASE_URL; ?>/assets/apple-touch-icon.png?v=2">
@@ -12,9 +16,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/style.css?v=1.9.12">
-    <script>
+    <script nonce="<?= htmlspecialchars($nonce) ?>">
         window.BASE_URL = <?php echo json_encode(BASE_URL); ?>;
         window.isLoggedIn = <?php echo json_encode(isset($_SESSION['user_id'])); ?>;
         window.lastPlayerId = <?php echo json_encode($_COOKIE['last_player_id'] ?? ''); ?>;

@@ -24,6 +24,13 @@ document.addEventListener("DOMContentLoaded", function () {
   let allProducts = []; // Store all products fetched from the API
   let finalPrice = 0; // Declare finalPrice globally
 
+  // Helper function to escape HTML and prevent XSS attacks
+  const escapeHTML = (str) => {
+    const p = document.createElement('p');
+    p.textContent = str;
+    return p.innerHTML;
+  };
+
   // Function to restrict input to numbers
   const sanitizeNumericInput = (event) => {
     // Replaces any character that is not a digit with an empty string.
@@ -354,18 +361,18 @@ document.addEventListener("DOMContentLoaded", function () {
           document.cookie = `last_player_id=${userid}; ${expires}; path=/`;
           document.cookie = `last_zone_id=${zoneid}; ${expires}; path=/`;
 
-          playerInfo.innerHTML = `<p class="ign-display">IGN: ${data.username}</p>`;
+          playerInfo.innerHTML = `<p class="ign-display">IGN: ${escapeHTML(data.username)}</p>`;
           playerVerificationError.classList.add("hidden"); // Hide error on success
           // Store the price multiplier
           playerData.price_multiplier = data.change_price || 1;
 
           if (selectedProduct && window.isLoggedIn) {
             showPaymentSection();
-          } else if (!window.isLoggedIn) {
-            playerInfo.innerHTML += `<p class="error">Please <a href="${BASE_URL}/auth/login">login</a> to purchase diamonds.</p>`;
+          } else if (!window.isLoggedIn && playerInfo) {
+            playerInfo.innerHTML += `<p class="error">Please <a href="${escapeHTML(BASE_URL)}/auth/login">login</a> to purchase diamonds.</p>`;
           }
         } else {
-          playerVerificationError.textContent = "Player Not Found";
+          playerVerificationError.textContent = escapeHTML(data.message || "Player Not Found");
           playerVerificationError.classList.remove("hidden");
           playerInfo.innerHTML = ''; // Clear on error
         }
@@ -431,13 +438,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     selectedProductDiv.innerHTML = `
             <h3>Order Summary</h3>
-            <p><strong>Player ID:</strong> ${playerData.userid}</p>
-            <p><strong>Zone ID:</strong> ${playerData.zoneid}</p>
-            <p><strong>IGN:</strong> ${playerData.username}</p>
+            <p><strong>Player ID:</strong> ${escapeHTML(playerData.userid)}</p>
+            <p><strong>Zone ID:</strong> ${escapeHTML(playerData.zoneid)}</p>
+            <p><strong>IGN:</strong> ${escapeHTML(playerData.username)}</p>
             <hr>
             <h4>Selected Package</h4>
-            <p>${selectedProduct.spu}</p>
-            <p><strong>Price: ₹${(finalPrice || 0).toFixed(2)}</strong></p>
+            <p>${escapeHTML(selectedProduct.spu)}</p>
+            <p><strong>Price: ₹${escapeHTML((finalPrice || 0).toFixed(2))}</strong></p>
         `;
     payNowBtn.disabled = false; // Re-enable button
     payNowBtn.innerHTML = `Pay Now (₹${(finalPrice || 0).toFixed(2)})`; // Set button text with price
@@ -450,6 +457,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (payNowBtn) {
     payNowBtn.addEventListener("click", async function () {
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+
       // Use the value from the selected button
       const paymentMethod = selectedPaymentMethod;
 
@@ -471,17 +480,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
       payNowBtn.disabled = true;
       payNowBtn.textContent = "Processing...";
-try {
+      try {
+        const bodyParams = {
+          productid: selectedProduct.id, // API uses 'id' for productid
+          userid: playerData.userid,
+          zoneid: playerData.zoneid,
+        };
+        if (csrfToken) {
+          bodyParams.csrf_token = csrfToken;
+        }
         const response = await fetch(`${BASE_URL}/payments/process`, {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
           },
-          body: new URLSearchParams({
-            productid: selectedProduct.id, // API uses 'id' for productid
-            userid: playerData.userid,
-            zoneid: playerData.zoneid,
-          }),
+          body: new URLSearchParams(bodyParams),
         });
 
         const data = await response.json();
@@ -513,7 +526,7 @@ try {
   // Show error message for player verification and general errors
   function showError(message) {
     if (orderStatus) {
-      orderStatus.innerHTML = `<p>Error: ${message}</p>`;
+      orderStatus.innerHTML = `<p>Error: ${escapeHTML(message)}</p>`;
       orderStatus.classList.remove("hidden");
       orderStatus.classList.add("error");
       // For better UX, automatically hide the error message after a few seconds
@@ -529,7 +542,7 @@ try {
   // Show error message for payment-related errors
   function showPaymentError(message) {
     if (paymentErrorStatus) {
-      paymentErrorStatus.innerHTML = `<p>Error: ${message}</p>`;
+      paymentErrorStatus.innerHTML = `<p>Error: ${escapeHTML(message)}</p>`;
       paymentErrorStatus.classList.remove("hidden");
       paymentErrorStatus.classList.add("error");
       // For better UX, automatically hide the error message after a few seconds

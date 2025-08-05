@@ -1,6 +1,3 @@
-<?php
-$page_title = 'Games';
-?>
 <style>
 .welcome-banner {
     background-color: var(--primary-accent);

@@ -18,7 +18,17 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // CSRF Token Validation
+    if (empty($_POST['csrf_token']) || empty($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        http_response_code(403); // Forbidden
+        echo json_encode(['status' => 'error', 'message' => 'Invalid security token. Please refresh the page and try again.']);
+        exit;
+    }
+
     try {
+        // Instantiate the database connection once.
+        $db = new Database();
+
         $user_id = $_SESSION['user_id'];
         $product_id = $_POST['productid'] ?? '';
         $player_id = $_POST['userid'] ?? '';
@@ -51,7 +61,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // --- SERVER-SIDE PRICE VERIFICATION ---
         // 2. Fetch the selected product's selling price and name from our local database
-        $db = new Database();
         $selected_product_db = $db->query("SELECT name, selling_price FROM products WHERE product_id = ?", [$product_id])->fetch_assoc();
 
         if ($selected_product_db === null) {
@@ -66,13 +75,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $final_price = $base_price * $price_multiplier; // Calculate the final price
         $formatted_final_price = number_format($final_price, 2, '.', ''); // Format to a string with 2 decimal places
 
-        // Create order in database
-        $db = new Database();
-        $order_id = 'SD' . time() . rand(100, 999);
+        // Use a transaction to ensure atomicity. If any step fails, the entire operation is rolled back.
+        $db->begin_transaction();
+
+        // Generate a unique order ID *before* inserting.
+        // Using a combination of a prefix, timestamp, and a random element for uniqueness.
+        $order_id = 'SD' . time() . bin2hex(random_bytes(4));
+
+        // Create the order in the database with the generated order_id
         $db->query(
-            "INSERT INTO orders (user_id, order_id, player_id, zone_id, product_id, product_name, amount, order_status) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')",
-            [$user_id, $order_id, $player_id, $zone_id, $product_id, $product_name, $formatted_final_price]
+            "INSERT INTO orders (user_id, player_id, zone_id, product_id, product_name, amount, order_status, order_id) 
+            VALUES (?, ?, ?, ?, ?, ?, 'pending', ?)",
+            [$user_id, $player_id, $zone_id, $product_id, $product_name, $formatted_final_price, $order_id]
         );
         $internal_order_id = $db->getLastInsertId();
 
@@ -105,6 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($result === null) {
             error_log("Invalid response from payment gateway. HTTP Code: " . $http_code . " Response: " . $response);
+            $db->rollback(); // Rollback transaction on failure
             throw new Exception('Invalid response from payment gateway.');
         }
 
@@ -114,6 +129,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 "UPDATE orders SET payment_url = ? WHERE id = ?",
                 [$result['result']['payment_url'], $internal_order_id]
             );
+            $db->commit(); // Commit transaction on success
 
             echo json_encode([
                 'status' => 'success',
@@ -123,12 +139,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit; // Terminate script after sending success response
         } else {
             error_log("Payment gateway error: " . ($result['message'] ?? 'Unknown error'));
+            $db->rollback(); // Rollback transaction on failure
             throw new Exception($result['message'] ?? 'Payment gateway error');
         }
     } catch (Exception $e) {
         http_response_code(500);
+        // Ensure rollback on any exception if a transaction was started
+        if (isset($db) && $db->inTransaction()) $db->rollback();
         error_log("Process Payment Error: " . $e->getMessage());
-        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        echo json_encode(['status' => 'error', 'message' => 'An unexpected error occurred. Please try again later.']);
         exit; // Terminate script after sending error response
     }
 }

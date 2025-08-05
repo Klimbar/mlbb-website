@@ -70,6 +70,16 @@ if ($request_uri !== '/' && substr($request_uri, -1) === '/') {
     $request_uri = substr($request_uri, 0, -1);
 }
 
+// --- Centralized Admin Route Protection ---
+// This is more secure than including a check in each file.
+if (strpos($request_uri, '/admin') === 0) {
+    // Check if user is logged in AND has the 'admin' role.
+    if (!is_logged_in() || !isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+        http_response_code(403); // Forbidden
+        die('Access Denied. You do not have permission to view this page.');
+    }
+}
+
 // Handle redirects first
 if (isset($redirects[$request_uri])) {
     // Construct the full redirect URL

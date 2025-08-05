@@ -13,14 +13,21 @@ class Database {
         $this->pass = DB_PASS;
         $this->dbname = DB_NAME;
 
+        // Enable exceptions for mysqli errors for more robust error handling
+        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
         try {
             $this->conn = new mysqli($this->host, $this->user, $this->pass, $this->dbname);
+            // It's best practice to set the charset after connecting to prevent encoding issues
+            $this->conn->set_charset("utf8mb4");
             $this->conn->query("SET time_zone = '+05:30'");
-        } catch (Exception $e) {
+        } catch (\mysqli_sql_exception $e) {
             // Log the error to a file
-            error_log("Database connection failed: " . $e->getMessage() . ", Host: " . $this->host . ", User: " . $this->user . ", DB: " . $this->dbname);
+            error_log("Database connection failed: " . $e->getMessage() . " (Code: " . $e->getCode() . ")");
             // Prevent the application from continuing without a database connection
-            die("Database connection failed. Please check the logs for details.");
+            // Use a 503 Service Unavailable status code
+            http_response_code(503);
+            die("A critical database error occurred. The site is temporarily unavailable. Please check the server logs for details.");
         }
     }
 
@@ -66,5 +73,27 @@ class Database {
 
     public function getLastInsertId() {
         return $this->conn->insert_id;
+    }
+
+    public function begin_transaction() {
+        return $this->conn->begin_transaction();
+    }
+
+    public function commit() {
+        return $this->conn->commit();
+    }
+
+    public function rollback() {
+        return $this->conn->rollback();
+    }
+
+    public function inTransaction() {
+        return $this->conn->in_transaction;
+    }
+
+    public function __destruct() {
+        if ($this->conn) {
+            $this->conn->close();
+        }
     }
 }

@@ -20,17 +20,33 @@ function getBaseApiParams(): array {
 try {
     switch ($action) {
         case 'getProducts':
-            $cacheFile = __DIR__ . '/cache/products.json';
+            $cacheDir = __DIR__ . '/cache';
+            $cacheFile = $cacheDir . '/products.json';
             $cacheDuration = 300; // Cache for 5 minutes (300 seconds)
+            $products = null;
 
             if (file_exists($cacheFile) && (time() - filemtime($cacheFile) < $cacheDuration)) {
                 // Serve from cache
-                $products = json_decode(file_get_contents($cacheFile), true);
-            } else {
+                // Use @ to suppress warnings on read failure, we'll fall back to DB fetch
+                $cachedData = @file_get_contents($cacheFile);
+                if ($cachedData !== false) {
+                    $products = json_decode($cachedData, true);
+                }
+            }
+
+            if ($products === null) {
                 // Fetch from DB and cache
                 $db = new Database();
                 $products = $db->query("SELECT product_id as id, name as spu, selling_price as price, is_out_of_stock FROM products ORDER BY price ASC")->fetch_all(MYSQLI_ASSOC);
-                file_put_contents($cacheFile, json_encode($products));
+                
+                // Ensure cache directory exists and is writable
+                if (!is_dir($cacheDir)) {
+                    @mkdir($cacheDir, 0755, true);
+                }
+                // Attempt to write to cache only if directory is writable
+                if (is_writable($cacheDir) && file_put_contents($cacheFile, json_encode($products)) === false) {
+                    error_log("API Warning: Could not write to product cache file: " . $cacheFile);
+                }
             }
             echo json_encode(['status' => 200, 'message' => 'success', 'data' => ['product' => $products]]);
             break;

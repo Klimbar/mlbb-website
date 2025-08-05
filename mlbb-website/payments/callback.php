@@ -3,24 +3,29 @@ require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/api_helpers.php';
 
+/** @var Database $db */
+$db = new Database();
+
+// We will manually control the response code and output.
+// This prevents any premature output from interfering with the logic.
+
+$order_id = $_REQUEST['order_id'] ?? null;
+$webhook_utr = $_POST['utr'] ?? null;
+$is_webhook = ($_SERVER['REQUEST_METHOD'] === 'POST' && $webhook_utr !== null);
+
+if (!$order_id) {
+    http_response_code(400);
+    die("Invalid callback: Missing order_id.");
+}
+
+// Use a transaction for the entire process to ensure atomicity.
+// This prevents partial updates if something goes wrong.
+$db->begin_transaction();
+
 try {
-    // 1. Get the order_id from the request (works for both GET and POST)
-    // Also, determine if this is a server-to-server webhook call or a user redirect.
-    // We'll assume a webhook is a POST request containing the 'utr' (Unique Transaction Reference).
-    $order_id = $_REQUEST['order_id'] ?? null;
-    $webhook_utr = $_POST['utr'] ?? null;
-    $is_webhook = ($_SERVER['REQUEST_METHOD'] === 'POST' && $webhook_utr !== null);
-
-    if (!$order_id) {
-        http_response_code(400);
-        die("Invalid callback: Missing order_id.");
-    }
-
-
-    $db = new Database();
-
-    // 2. Securely verify the payment status with the gateway's API
-    $post_data = [
+    // 1. Securely verify the payment status with the gateway's API first.
+    // This is crucial to ensure the callback isn't being spoofed.
+    $status_check_data = [
         'user_token' => PAYMENT_API_KEY,
         'order_id' => $order_id
     ];
@@ -28,54 +33,56 @@ try {
     $ch = curl_init(PAYMENT_STATUS_URL);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post_data));
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'Content-Type: application/x-www-form-urlencoded'
-    ]);
-
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($status_check_data));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
     $response = curl_exec($ch);
     $curl_error = curl_error($ch);
-    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
 
     if ($curl_error) {
-        error_log("Callback cURL Error for order $order_id: " . $curl_error);
-        http_response_code(500);
-        die("Error communicating with payment gateway.");
+        throw new Exception("cURL Error communicating with payment gateway: " . $curl_error);
     }
 
-    $result = json_decode($response, true);
+    $gateway_result = json_decode($response, true);
 
-    if ($result === null) {
-        error_log("Callback JSON Decode Error for order $order_id. HTTP: $http_code. Response: $response");
-        http_response_code(500);
-        die("Invalid response from payment gateway.");
+    if ($gateway_result === null || !isset($gateway_result['status'])) {
+        throw new Exception("Invalid response from payment gateway.");
     }
 
-    // 3. Fetch our internal order details
-    $order = $db->query("SELECT * FROM orders WHERE order_id = ?", [$order_id])->fetch_assoc();
+    // 2. Find the order and LOCK THE ROW to prevent race conditions.
+    // If another webhook for the same order arrives, it will wait here until the first one is finished.
+    $order = $db->query("SELECT * FROM orders WHERE order_id = ? FOR UPDATE", [$order_id])->fetch_assoc();
 
     if (!$order) {
+        // Order doesn't exist in our system. Acknowledge to stop retries.
         http_response_code(404);
-        die("Order not found in our system.");
+        echo "OK: Order not found.";
+        $db->commit(); // Commit to release any potential locks.
+        exit;
     }
     $order_db_id = $order['id'];
 
-    // Prevent re-processing a completed order
+    // 3. IDEMPOTENCY CHECK: This is the critical part to prevent duplicate processing.
     if ($order['order_status'] === 'completed') {
-        header("Location: " . BASE_URL . "/orders/details?id=$order_db_id");
-        exit;
+        // The order is already fulfilled. This is a duplicate webhook.
+        $db->commit(); // Finalize the transaction to release the lock.
+
+        if ($is_webhook) {
+            // Acknowledge with a 200 OK to stop the gateway from sending more notifications.
+            http_response_code(200);
+            echo "OK: Order already processed.";
+        } else {
+            // This is a user being redirected. Send them to their completed order's details page.
+            header("Location: " . BASE_URL . "/orders/details?id=$order_db_id");
+        }
+        exit; // Stop execution.
     }
 
     // 4. Process based on the verified status from the API call
-    if (isset($result['status']) && $result['status'] === true && isset($result['result']['txnStatus']) && $result['result']['txnStatus'] === 'SUCCESS') {
-        // Payment is confirmed successful.
-        $db->query(
-            "INSERT INTO payments (order_id, transaction_id, amount, payment_gateway, status, raw_response) VALUES (?, ?, ?, 'pay0', 'paid', ?)",
-            [$order_db_id, $result['result']['utr'] ?? $webhook_utr, $order['amount'], json_encode($result)]
-        );
+    $gateway_txn_status = $gateway_result['result']['txnStatus'] ?? 'FAILED';
 
-        // Fulfill the order
+    if ($gateway_result['status'] === true && $gateway_txn_status === 'SUCCESS') {
+        // Payment is confirmed successful. Fulfill the order.
         $fulfillment_params = [
             'uid' => API_UID,
             'email' => API_EMAIL,
@@ -86,56 +93,76 @@ try {
             'time' => time()
         ];
         $fulfillment_params['sign'] = generateSign($fulfillment_params, API_KEY);
-
         $fulfillment_response = callApi('/smilecoin/api/createorder', $fulfillment_params);
 
         if (isset($fulfillment_response['status']) && $fulfillment_response['status'] === 200) {
+            // Fulfillment successful, update order status to 'completed'.
             $db->query(
-                "UPDATE orders SET order_status = 'completed', payment_status = 'paid' WHERE id = ?",
+                "UPDATE orders SET order_status = 'completed', payment_status = 'paid', updated_at = NOW() WHERE id = ?",
                 [$order_db_id]
             );
         } else {
+            // Fulfillment failed, but payment was successful. Mark as 'failed' for manual review.
             $db->query(
-                "UPDATE orders SET order_status = 'failed', payment_status = 'paid' WHERE id = ?",
+                "UPDATE orders SET order_status = 'failed', payment_status = 'paid', updated_at = NOW() WHERE id = ?",
                 [$order_db_id]
             );
-            error_log("CRITICAL: Fulfillment failed for order " . $order_db_id . ". Response: " . json_encode($fulfillment_response));
+            error_log("CRITICAL: Fulfillment failed for paid order " . $order_db_id . ". Response: " . json_encode($fulfillment_response));
         }
 
-    } elseif (isset($result['status']) && $result['status'] === true && isset($result['result']['txnStatus']) && $result['result']['txnStatus'] === 'PENDING') {
+        // Log the successful payment transaction *after* attempting fulfillment.
         $db->query(
-            "UPDATE orders SET payment_status = 'pending' WHERE id = ?",
-            [$order_db_id]
+            "INSERT INTO payments (order_id, transaction_id, amount, payment_gateway, status, raw_response) VALUES (?, ?, ?, 'pay0', 'paid', ?)",
+            [$order_db_id, $gateway_result['result']['utr'] ?? $webhook_utr, $order['amount'], json_encode($gateway_result)]
         );
 
-    } else {
-        // Payment failed
+    } elseif ($gateway_result['status'] === true && $gateway_txn_status === 'PENDING') {
+        // Payment is still pending, just update our status. No fulfillment yet.
         $db->query(
-            "UPDATE orders SET order_status = 'failed', payment_status = 'failed' WHERE id = ?",
+            "UPDATE orders SET payment_status = 'pending', updated_at = NOW() WHERE id = ?",
             [$order_db_id]
         );
-        $failed_amount = $result['result']['amount'] ?? $_POST['amount'] ?? $order['amount'];
-        $failed_utr = $result['result']['utr'] ?? $webhook_utr;
+    } else {
+        // Payment failed according to the gateway.
+        $db->query(
+            "UPDATE orders SET order_status = 'failed', payment_status = 'failed', updated_at = NOW() WHERE id = ?",
+            [$order_db_id]
+        );
+        // Log the failed payment attempt.
+        $failed_amount = $gateway_result['result']['amount'] ?? $order['amount'];
+        $failed_utr = $gateway_result['result']['utr'] ?? $webhook_utr;
         $db->query(
             "INSERT INTO payments (order_id, transaction_id, amount, payment_gateway, status, raw_response) VALUES (?, ?, ?, 'pay0', 'failed', ?)",
-            [$order_db_id, $failed_utr, $failed_amount, json_encode($result)]
+            [$order_db_id, $failed_utr, $failed_amount, json_encode($gateway_result)]
         );
     }
 
-    // 5. Respond appropriately
+    // 5. If we've reached here without errors, commit all database changes.
+    $db->commit();
+
+    // 6. Respond appropriately to the original caller.
     if ($is_webhook) {
-        // Acknowledge the webhook call successfully
         http_response_code(200);
         echo "OK: Callback processed.";
     } else {
-        // Redirect the user to their order details page
         header("Location: " . BASE_URL . "/orders/details?id=$order_db_id");
     }
-    exit; // Always exit after responding
+    exit;
 
 } catch (Exception $e) {
-    error_log("Callback Exception: " . $e->getMessage());
+    // An error occurred. Roll back any partial database changes.
+    if ($db->inTransaction()) {
+        $db->rollback();
+    }
+    error_log("Callback Exception for order $order_id: " . $e->getMessage());
+
+    // Respond with a server error. This tells the payment gateway to retry the webhook later.
     http_response_code(500);
-    echo "An internal error occurred. Please contact support.";
+    // For a user, you might want to show a more friendly error page.
+    if ($is_webhook) {
+        echo "Error: Internal server error.";
+    } else {
+        // You could redirect to an error page.
+        die("An internal error occurred. Please contact support and reference order ID: " . htmlspecialchars($order_id));
+    }
 }
-?>
