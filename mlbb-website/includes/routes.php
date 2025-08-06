@@ -93,7 +93,9 @@ if (strpos($request_uri, '/admin') === 0) {
     // Check if user is logged in AND has the 'admin' role.
     if (!is_logged_in() || !isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
         http_response_code(403); // Forbidden
-        die('Access Denied. You do not have permission to view this page.');
+        header('Location: ' . BASE_URL . '/');
+        exit;
+
     }
 }
 
