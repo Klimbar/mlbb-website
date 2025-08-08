@@ -28,6 +28,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['username'] = $user['username'];
         $_SESSION['role'] = $user['role'];
+        session_regenerate_id(true); // Regenerate session ID on login for security
+
+        // Handle "Remember Me" functionality
+        if (isset($_POST['remember_me']) && $_POST['remember_me'] === 'on') {
+            $token = bin2hex(random_bytes(32));
+            $token_hash = hash('sha256', $token);
+            $expiry_date = date('Y-m-d H:i:s', time() + (30 * 24 * 60 * 60)); // 30 days from now
+
+            $db->query(
+                "INSERT INTO remember_me_tokens (user_id, token_hash, expiry_date) VALUES (?, ?, ?)",
+                [$user['id'], $token_hash, $expiry_date]
+            );
+
+            // Set the secure cookie
+            setcookie('remember_me', $token, [
+                'expires' => time() + (30 * 24 * 60 * 60), // 30 days
+                'path' => '/',
+                'secure' => true,   // Only send over HTTPS
+                'httponly' => true, // Prevent JavaScript access
+                'samesite' => 'Lax' // Helps prevent CSRF
+            ]);
+        }
         
         // Redirect to the home page on successful login
         header("Location: " . BASE_URL . "/");

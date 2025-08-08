@@ -1,14 +1,6 @@
 <?php
 require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/../includes/db.php';
-require_once __DIR__ . '/../includes/auth-check.php';
-
-
-// Only allow admins
-if ($_SESSION['role'] !== 'admin') {
-    header("Location: " . BASE_URL . "/");
-    exit();
-}
 
 $db = new Database();
 
@@ -133,7 +125,3 @@ if ($_POST && isset($_POST['update_status'])) {
         </div>
     </div>
 </div>
-
-
-
-
