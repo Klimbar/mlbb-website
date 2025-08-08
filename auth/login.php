@@ -56,6 +56,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="password" id="password" name="password" class="form-control" required>
         </div>
         
+        <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="remember_me" name="remember_me">
+            <label class="form-check-label" for="remember_me">Remember Me</label>
+        </div>
+        
         <button type="submit" class="btn btn-primary">Login</button>
     </form>
     
