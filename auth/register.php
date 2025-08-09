@@ -31,8 +31,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         if (strlen($password) < 8) {
             $errors['password'] = "Password must be at least 8 characters";
-        } elseif (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$/', $password)) {
-            $errors['password'] = "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.";
         }
         
         if ($password !== $confirm_password) {
@@ -143,18 +141,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (password.length < 8) {
             errors.push("be at least 8 characters");
-        }
-        if (!/[a-z]/.test(password)) {
-            errors.push("contain a lowercase letter");
-        }
-        if (!/[A-Z]/.test(password)) {
-            errors.push("contain an uppercase letter");
-        }
-        if (!/\d/.test(password)) {
-            errors.push("contain a number");
-        }
-        if (!/[^\da-zA-Z]/.test(password)) {
-            errors.push("contain a special character");
         }
 
         if (errors.length > 0) {

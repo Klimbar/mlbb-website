@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../bootstrap.php';
 $page_title = 'Mobile Legends: Bang Bang';
 ?>
 <style>

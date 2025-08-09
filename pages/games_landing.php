@@ -1,4 +1,7 @@
-<?php $page_title ="Welcome to Serdihin"; ?>
+<?php 
+require_once __DIR__ . '/../bootstrap.php';
+$page_title ="Welcome to Serdihin"; 
+?>
 <style>
 .welcome-banner {
     background-color: var(--primary-accent);

@@ -112,18 +112,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (password.length < 8) {
             errors.push("be at least 8 characters");
         }
-        if (!/[a-z]/.test(password)) {
-            errors.push("contain a lowercase letter");
-        }
-        if (!/[A-Z]/.test(password)) {
-            errors.push("contain an uppercase letter");
-        }
-        if (!/\d/.test(password)) {
-            errors.push("contain a number");
-        }
-        if (!/[^\da-zA-Z]/.test(password)) {
-            errors.push("contain a special character");
-        }
 
         if (errors.length > 0) {
             passwordInput.setCustomValidity("Password does not meet requirements.");
