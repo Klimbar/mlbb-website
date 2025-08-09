@@ -52,7 +52,6 @@ if ($response && isset($response['data']['product'])) {
             INSERT INTO products (product_id, name, api_pack_name, price, selling_price)
             VALUES (?, ?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE
-                name = VALUES(name),
                 api_pack_name = VALUES(api_pack_name),
                 price = VALUES(price)
         ", [
