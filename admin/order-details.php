@@ -43,9 +43,9 @@ if ($_POST && isset($_POST['update_status'])) {
 ?>
 
 <div class="container main-content">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Order Details - <?= htmlspecialchars($order['order_id']) ?></h2>
-        <a href="<?php echo BASE_URL; ?>/admin/orders" class="btn btn-secondary">← Back to Orders</a>
+    <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center mb-4">
+        <h2 class="mb-2 mb-sm-0">Order Details - <?= htmlspecialchars($order['order_id']) ?></h2>
+        <a href="<?php echo BASE_URL; ?>/admin/orders" class="btn btn-primary">← Back to Orders</a>
     </div>
     
     <div class="row g-4 mb-4">
@@ -117,9 +117,9 @@ if ($_POST && isset($_POST['update_status'])) {
                     <h3>Update Order Status</h3>
                 </div>
                 <div class="card-body">
-                    <form method="POST" class="d-flex gap-3 align-items-end">
+                    <form method="POST" class="d-flex flex-column flex-sm-row gap-2 align-items-stretch align-items-sm-end">
                         <input type="hidden" name="csrf_token" value="<?= generateCSRFToken() ?>">
-                        <div class="mb-3 flex-grow-1">
+                        <div class="flex-grow-1">
                             <label for="order_status" class="form-label">Current Status:</label>
                             <select name="order_status" id="order_status" class="form-select">
                                 <option value="pending" <?= $order['order_status'] === 'pending' ? 'selected' : '' ?>>Pending</option>
@@ -127,7 +127,7 @@ if ($_POST && isset($_POST['update_status'])) {
                                 <option value="failed" <?= $order['order_status'] === 'failed' ? 'selected' : '' ?>>Failed</option>
                             </select>
                         </div>
-                        <button type="submit" name="update_status" class="btn btn-primary">Update Status</button>
+                        <button type="submit" name="update_status" class="btn btn-success">Update Status</button>
                     </form>
                 </div>
             </div>
