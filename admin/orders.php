@@ -53,7 +53,7 @@ $orders = $db->query("
             <tbody>
                 <?php foreach ($orders as $order): ?>
                 <tr>
-                    <td><?= htmlspecialchars($order['order_id']) ?></td>
+                    <td><a href="<?php echo BASE_URL; ?>/admin/order-details?id=<?= $order['id'] ?>"><?= htmlspecialchars($order['order_id']) ?></a></td>
                     <td><?= htmlspecialchars($order['username']) ?></td>
                     <td><?= htmlspecialchars($order['product_name']) ?></td>
                     <td>₹<?= number_format($order['amount'], 2) ?></td>
@@ -96,9 +96,20 @@ $orders = $db->query("
                     </li>
                 <?php endif; ?>
 
-                <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                <?php
+                $window = 2; // Number of links to show on each side
+                for ($i = 1; $i <= $total_pages; $i++):
+                    if ($i == 1 || $i == $total_pages || ($i >= $page - $window && $i <= $page + $window)):
+                ?>
                     <li class="page-item <?= ($i == $page) ? 'active' : '' ?>"><a class="page-link" href="<?php echo BASE_URL; ?>/admin/orders?page=<?= $i ?>"><?= $i ?></a></li>
-                <?php endfor; ?>
+                <?php
+                    elseif ($i == $page - $window - 1 || $i == $page + $window + 1):
+                ?>
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                <?php
+                    endif;
+                endfor;
+                ?>
 
                 <?php if ($page < $total_pages): ?>
                     <li class="page-item">

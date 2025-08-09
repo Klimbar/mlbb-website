@@ -34,11 +34,19 @@ if (!$order) {
 }
 
 // Handle status update
-if ($_POST && isset($_POST['update_status'])) {
-    $new_status = $_POST['order_status'];
-    $db->query("UPDATE orders SET order_status = ? WHERE id = ?", [$new_status, $order_id]);
-    header("Location: " . BASE_URL . "/admin/order-details.php?id=" . $order_id);
-    exit();
+if ($_POST) {
+    if (isset($_POST['update_status'])) {
+        $new_status = $_POST['order_status'];
+        $db->query("UPDATE orders SET order_status = ? WHERE id = ?", [$new_status, $order_id]);
+        header("Location: " . BASE_URL . "/admin/order-details.php?id=" . $order_id);
+        exit();
+    }
+    if (isset($_POST['update_payment_status'])) {
+        $new_payment_status = $_POST['payment_status'];
+        $db->query("UPDATE orders SET payment_status = ? WHERE id = ?", [$new_payment_status, $order_id]);
+        header("Location: " . BASE_URL . "/admin/order-details.php?id=" . $order_id);
+        exit();
+    }
 }
 ?>
 
@@ -113,6 +121,26 @@ if ($_POST && isset($_POST['update_status'])) {
             </div>
             
             <div class="card">
+                <div class="card-header">
+                    <h3>Update Payment Status</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" class="d-flex flex-column flex-sm-row gap-2 align-items-stretch align-items-sm-end">
+                        <input type="hidden" name="csrf_token" value="<?= generateCSRFToken() ?>">
+                        <div class="flex-grow-1">
+                            <label for="payment_status" class="form-label">Current Status:</label>
+                            <select name="payment_status" id="payment_status" class="form-select">
+                                <option value="pending" <?= $order['payment_status'] === 'pending' ? 'selected' : '' ?>>Pending</option>
+                                <option value="paid" <?= $order['payment_status'] === 'paid' ? 'selected' : '' ?>>Paid</option>
+                                <option value="failed" <?= $order['payment_status'] === 'failed' ? 'selected' : '' ?>>Failed</option>
+                            </select>
+                        </div>
+                        <button type="submit" name="update_payment_status" class="btn btn-success">Update Status</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
                 <div class="card-header">
                     <h3>Update Order Status</h3>
                 </div>

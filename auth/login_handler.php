@@ -29,7 +29,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $db->query("INSERT INTO remember_me_tokens (user_id, token_hash, expiry_date) VALUES (?, ?, ?)", [$user['id'], $token_hash, $expiry_date]);
 
-            setcookie('remember_me', $user['id'] . ':' . $token, time() + (30 * 24 * 60 * 60), "/");
+            setcookie('remember_me', $user['id'] . ':' . $token, [
+                'expires' => time() + (30 * 24 * 60 * 60), // 30 days
+                'path' => '/',
+                'domain' => '', // Let the browser decide
+                'secure' => true,   // Only send over HTTPS
+                'httponly' => true, // Prevent JavaScript access
+                'samesite' => 'Strict' // CSRF protection
+            ]);
         }
         
         // Redirect to the home page on successful login
