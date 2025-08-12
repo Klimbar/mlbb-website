@@ -154,6 +154,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="password" id="confirm_password" name="confirm_password" class="form-control <?php if (isset($errors['confirm_password'])) echo 'is-invalid'; ?>" required>
                 <div id="confirm-password-feedback" class="invalid-feedback d-block"><?php echo htmlspecialchars($errors['confirm_password'] ?? ''); ?></div>
             </div>
+
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="show_password">
+                <label class="form-check-label" for="show_password">Show Password</label>
+            </div>
             
             <button type="submit" id="registerButton" class="btn btn-primary">Register</button>
         </div>
@@ -418,5 +423,17 @@ document.addEventListener('DOMContentLoaded', function () {
         validateConfirmPassword(); // Re-validate confirm password when password changes
     });
     confirmPasswordInput.addEventListener('input', validateConfirmPassword);
+
+    document.getElementById('show_password').addEventListener('click', function (e) {
+        var passwordInput = document.getElementById('password');
+        var confirmPasswordInput = document.getElementById('confirm_password');
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            confirmPasswordInput.type = 'text';
+        } else {
+            passwordInput.type = 'password';
+            confirmPasswordInput.type = 'password';
+        }
+    });
 });
 </script>

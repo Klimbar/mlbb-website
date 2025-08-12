@@ -82,6 +82,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
                             <div id="confirm-password-feedback" class="invalid-feedback"></div>
                         </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="show_password">
+                            <label class="form-check-label" for="show_password">Show Password</label>
+                        </div>
                         <button type="submit" class="btn btn-primary w-100">Reset Password</button>
                     </form>
                 </div>
@@ -154,5 +158,17 @@ document.addEventListener('DOMContentLoaded', function () {
         validateConfirmPassword(); // Re-validate confirm password when password changes
     });
     confirmPasswordInput.addEventListener('input', validateConfirmPassword);
+
+    document.getElementById('show_password').addEventListener('click', function (e) {
+        var passwordInput = document.getElementById('password');
+        var confirmPasswordInput = document.getElementById('confirm_password');
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            confirmPasswordInput.type = 'text';
+        } else {
+            passwordInput.type = 'password';
+            confirmPasswordInput.type = 'password';
+        }
+    });
 });
 </script>

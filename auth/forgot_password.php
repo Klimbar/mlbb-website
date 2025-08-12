@@ -58,15 +58,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $mail->AltBody = "Hello,\n\nYou are receiving this email because we received a password reset request for your account.\n\nPlease click on the following link to reset your password: " . $reset_link . "\n\nIf you did not request a password reset, no further action is required.\n\nRegards,\nSerdihin Team";
 
                 $mail->send();
-                $_SESSION['success_message'] = 'If an account with that email exists, a password reset link has been sent.';
+                $_SESSION['success_message'] = 'A password reset link has been sent to ' . htmlspecialchars($email) . '.';
             } catch (Exception $e) {
                 // Log the error for debugging, but show a generic message to the user.
                 error_log("Message could not be sent. Mailer Error: {$mail->ErrorInfo}");
                 $_SESSION['error_message'] = "Message could not be sent. Please try again later.";
             }
         } else {
-            // Still show the success message to prevent email enumeration
-            $_SESSION['success_message'] = 'If an account with that email exists, a password reset link has been sent.';
+            $_SESSION['error_message'] = 'Email not found. Please check your email address and try again.';
         }
     }
     // Redirect to clear POST data and display messages
