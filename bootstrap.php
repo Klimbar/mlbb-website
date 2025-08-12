@@ -33,7 +33,7 @@ $nonce = base64_encode(random_bytes(16));
 define('NONCE', $nonce);
 
 // Detect API requests
-$isApiRequest = strpos($_SERVER['REQUEST_URI'], '/api') !== false || strpos($_SERVER['REQUEST_URI'], '/payments') !== false;
+$isApiRequest = strpos($_SERVER['REQUEST_URI'], '/api') !== false || strpos($_SERVER['REQUEST_URI'], '/payments') !== false || strpos($_SERVER['REQUEST_URI'], '/auth') !== false;
 
 // Send security headers
 if (!$isApiRequest && !headers_sent()) {
@@ -170,4 +170,3 @@ if (!$isApiRequest && !isset($_SESSION['user_id']) && isset($_COOKIE['remember_m
         }
     }
 }
-?>

@@ -19,7 +19,7 @@
 
     # Redirect www to non-www
     RewriteCond %{HTTP_HOST} ^www\.serdihin\.com$ [NC]
-    RewriteRule ^(.*)$ https://serdihin.com/$1 [L,R=301]
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [L,R=301]
 
     # Force HTTPS (works behind proxy)
     RewriteCond %{HTTPS} off
@@ -28,7 +28,11 @@
 
     # Externally redirect direct requests for .php files to clean URLs
     RewriteCond %{THE_REQUEST} \s/+(.+?)\.php[\s?] [NC]
-    RewriteRule ^ /%1 [R=301,L]
+    RewriteCond %{REQUEST_URI} !^/auth/send_otp_ajax\.php$ [NC]
+    RewriteCond %{REQUEST_URI} !^/auth/clear_session_and_refresh_csrf\.php$ [NC]
+    RewriteCond %{REQUEST_URI} !^/auth/clear_otp_session\.php$ [NC]
+    RewriteCond %{REQUEST_URI} !^/auth/refresh_csrf\.php$ [NC]
+    RewriteRule ^ https://%{HTTP_HOST}/%1 [R=301,L]
 
     # Internally rewrite all non-file/non-directory requests to index.php
     RewriteCond %{REQUEST_FILENAME} !-f
@@ -38,6 +42,10 @@
     RewriteCond %{REQUEST_URI} !^/js/ [NC]
     RewriteCond %{REQUEST_URI} !^/assets/ [NC]
     RewriteCond %{REQUEST_URI} !^/api\.php$
+    RewriteCond %{REQUEST_URI} !^/auth/send_otp_ajax\.php$
+    RewriteCond %{REQUEST_URI} !^/auth/clear_session_and_refresh_csrf\.php$
+    RewriteCond %{REQUEST_URI} !^/auth/clear_otp_session\.php$
+    RewriteCond %{REQUEST_URI} !^/auth/refresh_csrf\.php$
     RewriteRule ^(.*)$ index.php [L,QSA]
 </IfModule>
 

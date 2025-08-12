@@ -149,7 +149,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       const data = await response.json();
-      console.log('API Data:', data);
+      //console.log('API Data:', data);
 
       if (data.status === 200) {
         allProducts = data.data.product || []; // Store all products

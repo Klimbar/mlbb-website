@@ -71,6 +71,10 @@ class Database {
         return $types;
     }
 
+    public function getAffectedRows() {
+        return $this->conn->affected_rows;
+    }
+
     public function getLastInsertId() {
         return $this->conn->insert_id;
     }

@@ -17,6 +17,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = $result->fetch_assoc();
 
     if ($user && password_verify($password, $user['password'])) {
+        if (!$user['is_verified']) {
+            $_SESSION['error_message'] = "Your account is not verified. Please register again.";
+            header("Location: " . BASE_URL . "/auth/login");
+            exit();
+        }
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['username'] = $user['username'];
         $_SESSION['role'] = $user['role'];
