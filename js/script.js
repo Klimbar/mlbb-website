@@ -198,10 +198,10 @@ document.addEventListener("DOMContentLoaded", function () {
     28: '3099 + 589 💎',
     29: '4649 + 883 💎',
     30: '7740 + 1548 💎',
-    22590: '55 + 55 💎 first recharge!',
-    22591: '165 + 165 💎 first recharge!',
-    22592: '275 + 275 💎 first recharge!',
-    22593: '565 + 565 💎 first recharge!',
+    22590: '50 + 50 💎 first recharge!',
+    22591: '150 + 150 💎 first recharge!',
+    22592: '250 + 250 💎 first recharge!',
+    22593: '500 + 500 💎 first recharge!',
     16642: 'Weekly Pass x 1',
     33: 'Unlock exclusive skins and rewards!'
   };
