@@ -58,7 +58,7 @@ if (!$order) {
                 <?php endif; ?>
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                     <strong>Order Status:</strong>
-                    <span class="badge bg-<?php echo $order['order_status'] === 'completed' ? 'success' : ($order['order_status'] === 'pending' ? 'warning' : 'danger') ?>">
+                    <span class="badge bg-<?php echo $order['order_status'] === 'completed' ? 'success' : ($order['order_status'] === 'pending' || $order['order_status'] === 'processing' ? 'warning' : 'danger') ?>">
                         <?php echo ucfirst($order['order_status']) ?>
                     </span>
                 </li>
@@ -79,6 +79,10 @@ if (!$order) {
     <?php if ($order['order_status'] === 'pending' && $order['payment_status'] !== 'failed'): ?>
         <div class="alert alert-info mt-3">
             <p>Your payment is being processed. Please wait or contact support.</p>
+        </div>
+    <?php elseif ($order['order_status'] === 'processing'): ?>
+        <div class="alert alert-info mt-3">
+            <p>Your order is being processed. The product will be delivered shortly.</p>
         </div>
     <?php elseif ($order['order_status'] === 'completed'): ?>
         <div class="alert alert-success mt-3">

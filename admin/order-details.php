@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/api_helpers.php';
 //require_once __DIR__ . '/../includes/auth-check.php';
 
 
@@ -35,15 +36,18 @@ if (!$order) {
 
 // Handle status update
 if ($_POST) {
+    $old_order_status = $order['order_status'];
+    $old_payment_status = $order['payment_status'];
+
     if (isset($_POST['update_status'])) {
         $new_status = $_POST['order_status'];
-        $db->query("UPDATE orders SET order_status = ? WHERE id = ?", [$new_status, $order_id]);
+        update_order_status($db, $order_id, $new_status, $old_order_status, $old_payment_status, $old_payment_status, 'Admin manual update');
         header("Location: " . BASE_URL . "/admin/order-details.php?id=" . $order_id);
         exit();
     }
     if (isset($_POST['update_payment_status'])) {
         $new_payment_status = $_POST['payment_status'];
-        $db->query("UPDATE orders SET payment_status = ? WHERE id = ?", [$new_payment_status, $order_id]);
+        update_order_status($db, $order_id, $old_order_status, $old_order_status, $new_payment_status, $old_payment_status, 'Admin manual update');
         header("Location: " . BASE_URL . "/admin/order-details.php?id=" . $order_id);
         exit();
     }
@@ -91,7 +95,7 @@ if ($_POST) {
                     </div>
                     <div class="d-flex justify-content-between py-2 border-bottom">
                         <label class="fw-bold text-secondary">Order Status:</label>
-                        <span class="badge bg-<?= $order['order_status'] === 'completed' ? 'success' : ($order['order_status'] === 'pending' ? 'warning' : 'danger') ?>">
+                        <span class="badge bg-<?= $order['order_status'] === 'completed' ? 'success' : ($order['order_status'] === 'pending' || $order['order_status'] === 'processing' ? 'warning' : 'danger') ?>">
                             <?= ucfirst($order['order_status']) ?>
                         </span>
                     </div>
@@ -151,6 +155,7 @@ if ($_POST) {
                             <label for="order_status" class="form-label">Current Status:</label>
                             <select name="order_status" id="order_status" class="form-select">
                                 <option value="pending" <?= $order['order_status'] === 'pending' ? 'selected' : '' ?>>Pending</option>
+                                <option value="processing" <?= $order['order_status'] === 'processing' ? 'selected' : '' ?>>Processing</option>
                                 <option value="completed" <?= $order['order_status'] === 'completed' ? 'selected' : '' ?>>Completed</option>
                                 <option value="failed" <?= $order['order_status'] === 'failed' ? 'selected' : '' ?>>Failed</option>
                             </select>
@@ -162,7 +167,3 @@ if ($_POST) {
         </div>
     </div>
 </div>
-
-
-
-

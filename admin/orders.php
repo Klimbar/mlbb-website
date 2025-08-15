@@ -58,7 +58,7 @@ $orders = $db->query("
                     <td><?= htmlspecialchars($order['product_name']) ?></td>
                     <td>₹<?= number_format($order['amount'], 2) ?></td>
                     <td>
-                        <span class="badge bg-<?= $order['order_status'] === 'completed' ? 'success' : ($order['order_status'] === 'pending' ? 'warning' : 'danger') ?>">
+                        <span class="badge bg-<?= $order['order_status'] === 'completed' ? 'success' : ($order['order_status'] === 'pending' || $order['order_status'] === 'processing' ? 'warning' : 'danger') ?>">
                                     <?= ucfirst($order['order_status']) ?>
                                 </span>
                     </td>

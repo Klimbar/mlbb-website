@@ -48,3 +48,18 @@ function callApi($endpoint, $params) {
 
     return $decoded_response;
 }
+
+/**
+ * Updates the order status and records the change in the history table.
+ */
+function update_order_status(Database $db, int $order_db_id, string $new_status, string $old_status, string $new_payment_status, string $old_payment_status, string $reason): void
+{
+    $db->query(
+        "UPDATE orders SET order_status = ?, payment_status = ? WHERE id = ?",
+        [$new_status, $new_payment_status, $order_db_id]
+    );
+    $db->query(
+        "INSERT INTO order_status_history (order_id, old_status, new_status, old_payment_status, new_payment_status, change_reason) VALUES (?, ?, ?, ?, ?, ?)",
+        [$order_db_id, $old_status, $new_status, $old_payment_status, $new_payment_status, $reason]
+    );
+}
