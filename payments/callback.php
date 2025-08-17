@@ -37,8 +37,8 @@ function handle_webhook(string $order_id): void
     log_message("Webhook received for Order: $order_id | Status: $webhook_status | UTR: $webhook_utr");
 
     // Prevent duplicate webhook processing
-    if (is_webhook_processed($webhook_id)) {
-        log_message("Webhook ID $webhook_id already processed. Skipping.");
+    if (is_webhook_processed($webhook_id, $order_id)) {
+        log_message("Webhook ID $webhook_id or a successful payment for order $order_id has already been processed. Skipping.");
         http_response_code(200);
         echo "OK: Webhook already processed.";
         exit;
@@ -66,9 +66,9 @@ function handle_redirect(string $order_id): void
 
     // Process payment confirmation if the order is not yet completed
     $order = get_order_by_db_id($order_db_id);
-    if ($order && $order['order_status'] !== 'completed') {
-        process_payment_confirmation($order_id, null, null, false);
-    }
+    if ($order && $order['order_status'] === 'pending') {
+    process_payment_confirmation($order_id, null, null, false);
+}
 
     // Always redirect to the details page
     header("Location: " . BASE_URL . "/orders/details?id=$order_db_id");
@@ -158,8 +158,10 @@ function process_successful_payment(Database $db, array $order, string $transact
         update_order_status($db, $order_db_id, 'completed', 'processing', 'paid', 'paid', 'Fulfillment successful.');
         log_message("Fulfillment success for order " . $order['order_id']);
     } else {
-        update_order_status($db, $order_db_id, 'failed', 'processing', 'paid', 'paid', 'CRITICAL: Fulfillment failed after payment!');
-        log_message("CRITICAL: Fulfillment failed for paid order " . $order['order_id'] . ". Response: " . json_encode($fulfillment_response), 'error');
+        $response_json = json_encode($fulfillment_response);
+        $error_message = "CRITICAL: Fulfillment failed. Response: " . $response_json;
+        update_order_status($db, $order_db_id, 'failed', 'processing', 'paid', 'paid', $error_message);
+        log_message("CRITICAL: Fulfillment failed for paid order " . $order['order_id'] . ". Response: " . $response_json, 'error');
     }
 }
 
@@ -226,11 +228,26 @@ function get_order_by_db_id(int $order_db_id): ?array
     return $db->query("SELECT * FROM orders WHERE id = ?", [$order_db_id])->fetch_assoc();
 }
 
-function is_webhook_processed(string $webhook_id): bool
+function is_webhook_processed(string $webhook_id, string $order_id): bool
 {
     $db = new Database();
+    
+    // Check for the webhook ID
     $result = $db->query("SELECT id FROM payments WHERE webhook_id = ?", [$webhook_id])->fetch_assoc();
-    return $result !== null;
+    if ($result !== null) {
+        return true;
+    }
+
+    // Check for a successful payment for the order
+    $order_db_id = get_order_db_id($order_id);
+    if ($order_db_id) {
+        $payment = $db->query("SELECT id FROM payments WHERE order_id = ? AND status = 'paid'", [$order_db_id])->fetch_assoc();
+        if ($payment !== null) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 function log_message(string $message, string $level = 'info'): void

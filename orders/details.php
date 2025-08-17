@@ -76,7 +76,15 @@ if (!$order) {
         </div>
     </div>
     
-    <?php if ($order['order_status'] === 'pending' && $order['payment_status'] !== 'failed'): ?>
+    <?php if ($order['payment_status'] === 'failed'): ?>
+        <div class="alert alert-danger mt-3">
+            <p>Your payment has failed. Please try again or contact customer support.</p>
+        </div>
+    <?php elseif ($order['order_status'] === 'failed'): ?>
+        <div class="alert alert-danger mt-3">
+            <p>There was a problem with your order. Please contact customer support for assistance.</p>
+        </div>
+    <?php elseif ($order['order_status'] === 'pending' && $order['payment_status'] !== 'failed'): ?>
         <div class="alert alert-info mt-3">
             <p>Your payment is being processed. Please wait or contact support.</p>
         </div>

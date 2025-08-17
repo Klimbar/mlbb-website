@@ -23,7 +23,7 @@ if (!$order_id) {
 
 // Get order details
 $order = $db->query("
-    SELECT o.*, u.username, u.email
+    SELECT o.*, u.username, u.email, u.phone
     FROM orders o
     JOIN users u ON o.user_id = u.id
     WHERE o.id = ?
@@ -117,9 +117,13 @@ if ($_POST) {
                         <label class="fw-bold text-secondary">Username:</label>
                         <span><?= htmlspecialchars($order['username']) ?></span>
                     </div>
-                    <div class="d-flex justify-content-between py-2">
+                    <div class="d-flex justify-content-between py-2 border-bottom">
                         <label class="fw-bold text-secondary">Email:</label>
                         <span><?= htmlspecialchars($order['email']) ?></span>
+                    </div>
+                    <div class="d-flex justify-content-between py-2">
+                        <label class="fw-bold text-secondary">Phone:</label>
+                        <span><?= htmlspecialchars($order['phone']) ?></span>
                     </div>
                 </div>
             </div>
