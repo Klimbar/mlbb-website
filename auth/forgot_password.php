@@ -74,27 +74,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card mt-5">
-                <div class="card-body">
-                    <h2 class="card-title text-center">Forgot Password</h2>
-                    <p class="text-center">Enter your email address and we will send you a link to reset your password.</p>
-                    <form method="post">
-                        <input type="hidden" name="csrf_token" value="<?= generateCSRFToken() ?>">
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email address</label>
-                            <input type="email" class="form-control" id="email" name="email" required>
+<div class="page-content-wrapper">
+    <div class="main-content">
+        <div class="container auth-container">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card mt-5">
+                        <div class="card-body">
+                            <h2 class="card-title text-center">Forgot Password</h2>
+                            <p class="text-center">Enter your email address and we will send you a link to reset your password.</p>
+                            <form method="post">
+                                <input type="hidden" name="csrf_token" value="<?= generateCSRFToken() ?>">
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email address</label>
+                                    <input type="email" class="form-control" id="email" name="email" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Send Password Reset Link</button>
+                            </form>
+                            <?php if (isset($_SESSION['success_message'])):
+ ?>
+                                <div class="alert alert-success mt-3"><?php echo $_SESSION['success_message']; unset($_SESSION['success_message']); ?></div>
+                            <?php endif; ?>
+                            <?php if (isset($_SESSION['error_message'])):
+ ?>
+                                <div class="alert alert-danger mt-3"><?php echo $_SESSION['error_message']; unset($_SESSION['error_message']); ?></div>
+                            <?php endif; ?>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100">Send Password Reset Link</button>
-                    </form>
-                    <?php if (isset($_SESSION['success_message'])): ?>
-                        <div class="alert alert-success mt-3"><?php echo $_SESSION['success_message']; unset($_SESSION['success_message']); ?></div>
-                    <?php endif; ?>
-                    <?php if (isset($_SESSION['error_message'])): ?>
-                        <div class="alert alert-danger mt-3"><?php echo $_SESSION['error_message']; unset($_SESSION['error_message']); ?></div>
-                    <?php endif; ?>
+                    </div>
                 </div>
             </div>
         </div>

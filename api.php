@@ -27,7 +27,6 @@ try {
 
             if (file_exists($cacheFile) && (time() - filemtime($cacheFile) < $cacheDuration)) {
                 // Serve from cache
-                // Use @ to suppress warnings on read failure, we'll fall back to DB fetch
                 $cachedData = @file_get_contents($cacheFile);
                 if ($cachedData !== false) {
                     $products = json_decode($cachedData, true);
@@ -37,7 +36,16 @@ try {
             if ($products === null) {
                 // Fetch from DB and cache
                 $db = new Database();
-                $products = $db->query("SELECT product_id as id, name as spu, selling_price as price, is_out_of_stock FROM products ORDER BY price ASC")->fetch_all(MYSQLI_ASSOC);
+                $regular_products = $db->query("SELECT product_id as id, name as spu, description, image, selling_price as price, is_out_of_stock FROM products")->fetch_all(MYSQLI_ASSOC);
+                $custom_products = $db->query("SELECT product_ids as id, name as spu, description, image, selling_price as price, is_out_of_stock FROM custom_products")->fetch_all(MYSQLI_ASSOC);
+                
+                $all_products = array_merge($regular_products, $custom_products);
+                
+                usort($all_products, function($a, $b) {
+                    return $a['price'] <=> $b['price'];
+                });
+
+                $products = $all_products; // Assign the sorted combined array
                 
                 // Ensure cache directory exists and is writable
                 if (!is_dir($cacheDir)) {
@@ -54,11 +62,10 @@ try {
         case 'verifyPlayer':
             $userid = trim($_POST['userid'] ?? '');
             $zoneid = trim($_POST['zoneid'] ?? '');
-            $productid = trim($_POST['productid'] ?? '');
+            $productid_string = trim($_POST['productid'] ?? '');
 
             // Enhanced input validation
             if (empty($userid) || empty($zoneid)) {
-
                 http_response_code(400);
                 echo json_encode(['status' => 400, 'message' => 'Missing required parameters: userid or zoneid.']);
                 break;
@@ -70,7 +77,13 @@ try {
             }
 
             // Use default productid if not provided
-            $productid = !empty($productid) ? $productid : '22590';
+            $productid = !empty($productid_string) ? $productid_string : '22590';
+
+            // If it's a custom product, use the first ID for verification
+            if (strpos($productid, '&') !== false) {
+                $product_ids = explode('&', $productid);
+                $productid = $product_ids[0];
+            }
 
             $params = getBaseApiParams() + [
                 'userid' => $userid,

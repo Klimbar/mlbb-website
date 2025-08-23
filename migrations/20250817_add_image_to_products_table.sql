@@ -1,0 +1,1 @@
+ALTER TABLE `products` ADD `image` VARCHAR(255) NULL DEFAULT NULL AFTER `description`;

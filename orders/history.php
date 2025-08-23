@@ -35,7 +35,7 @@ $orders = $result->fetch_all(MYSQLI_ASSOC);
     <?php if (empty($orders)): ?>
         <p>You haven't placed any orders yet.</p>
     <?php else: ?>
-        <div class="table-responsive">
+        <div class="table-responsive table-responsive-cards">
             <table class="table table-striped table-hover">
                 <thead>
                     <tr>
@@ -52,16 +52,16 @@ $orders = $result->fetch_all(MYSQLI_ASSOC);
                 <tbody>
                     <?php foreach ($orders as $order): ?>
                         <tr>
-                            <td><a href="<?php echo BASE_URL; ?>/orders/details?id=<?= $order['id'] ?>"><?= htmlspecialchars($order['order_id']) ?></a></td>
-                            <td><?= htmlspecialchars($order['product_name']) ?></td>
-                            <td><?= htmlspecialchars($order['player_id']) ?></td>
-                            <td>₹<?= number_format($order['amount'], 2) ?></td>
-                            <td>
+                            <td data-label="Order ID"><a href="<?php echo BASE_URL; ?>/orders/details?id=<?= $order['id'] ?>"><?= htmlspecialchars($order['order_id']) ?></a></td>
+                            <td data-label="Product"><?= htmlspecialchars($order['product_name']) ?></td>
+                            <td data-label="Player ID"><?= htmlspecialchars($order['player_id']) ?></td>
+                            <td data-label="Amount">₹<?= number_format($order['amount'], 2) ?></td>
+                            <td data-label="Order Status">
                                 <span class="badge bg-<?= $order['order_status'] === 'completed' ? 'success' : ($order['order_status'] === 'pending' || $order['order_status'] === 'processing' ? 'warning' : 'danger') ?>">
                             <?= ucfirst($order['order_status']) ?>
                         </span>
                             </td>
-                            <td>
+                            <td data-label="Payment Status">
                                 <?php
                                 $payment_status_display = $order['payment_status'] ?? 'N/A'; // Default to N/A if NULL
                                 $badge_class = 'secondary'; // Default badge color for N/A
@@ -78,8 +78,8 @@ $orders = $result->fetch_all(MYSQLI_ASSOC);
                                     <?= ucfirst($payment_status_display) ?>
                                 </span>
                             </td>
-                            <td><?= date('M j, Y', strtotime($order['created_at'])) ?></td>
-                            <td>
+                            <td data-label="Date"><?= date('M j, Y', strtotime($order['created_at'])) ?></td>
+                            <td data-label="Actions">
                                 <a href="<?php echo BASE_URL; ?>/orders/details?id=<?= $order['id'] ?>" class="btn btn-sm btn-primary">View</a>
                             </td>
                         </tr>

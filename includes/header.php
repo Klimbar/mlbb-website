@@ -17,7 +17,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/style.css?v=1.9.12">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/style.css?v=1.9.13">
     <script nonce="<?= htmlspecialchars($nonce) ?>">
         window.BASE_URL = <?php echo json_encode(BASE_URL); ?>;
         window.isLoggedIn = <?php echo json_encode(isset($_SESSION['user_id'])); ?>;
@@ -26,6 +26,9 @@
     </script>
 </head>
 <body>
+
+
+
 <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
     <div class="container-fluid">
         <a class="navbar-brand d-flex align-items-center" href="<?php echo BASE_URL; ?>/">
@@ -65,3 +68,4 @@
         </div>
     </div>
 </nav>
+<div class="page-content-wrapper">

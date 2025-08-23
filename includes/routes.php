@@ -46,6 +46,8 @@ $routes = [
     // Dynamic routes for "pretty" URLs
     '/admin/order-details/(\d+)' => 'admin/order-details',
     '/orders/details/(\d+)' => 'orders/details',
+    '/region-check' => 'region-checker/region-check',
+    '/api/region-proxy' => 'region-checker/proxy',
 ];
 
 // Define page titles, mapping them to the file path from the routes array
@@ -62,6 +64,7 @@ $page_titles = [
     'orders/history' => 'My Order History',
     'admin/order-details' => 'Order Details',
     'orders/details' => 'Order Details',
+    'region-checker/region-check' => 'MLBB Region Checker',
 ];
 
 
@@ -100,6 +103,15 @@ if (strpos($request_uri, '/admin') === 0) {
         header('Location: ' . BASE_URL . '/');
         exit;
 
+    }
+}
+
+// --- Centralized Orders Route Protection ---
+if (strpos($request_uri, '/orders') === 0) {
+    // Check if user is logged in.
+    if (!is_logged_in()) {
+        header('Location: ' . BASE_URL . '/auth/login.php');
+        exit;
     }
 }
 
@@ -152,7 +164,7 @@ if (!$route_found && array_key_exists($request_uri, $routes)) {
         $page_title = $page_titles[$route_file];
     }
     // Exclude header/footer for API routes
-    if ($request_uri === '/api' || strpos($route_file, 'payments/') === 0 || strpos($route_file, 'api_handlers/') === 0 || $request_uri === '/auth/send_otp_ajax' || $request_uri === '/auth/clear_session_and_refresh_csrf' || $request_uri === '/auth/clear_otp_session' || $request_uri === '/auth/refresh_csrf') {
+    if ($request_uri === '/api' || strpos($route_file, 'payments/') === 0 || strpos($route_file, 'api_handlers/') === 0 || $request_uri === '/auth/send_otp_ajax' || $request_uri === '/auth/clear_session_and_refresh_csrf' || $request_uri === '/auth/clear_otp_session' || $request_uri === '/auth/refresh_csrf' || $request_uri === '/api/region-proxy') {
         require_once __DIR__ . '/../' . $route_file . '.php';
     } else {
         require_once __DIR__ . '/header.php';

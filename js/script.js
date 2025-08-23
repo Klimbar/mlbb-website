@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
     { id: 'diamonds', name: 'Diamonds', image: 'diamond.webp' },
     { id: 'weekly_pass', name: 'Weekly Pass', image: 'weekly_pass.webp' },
     { id: 'twilight_pass', name: 'Twilight Pass', image: 'twilight_pass.jpg' },
-    { id: 'double_diamonds', name: '2 x First Recharge Bonus', image: 'first_recharge.png' }
+    { id: 'double_diamonds', name: 'First Recharge', image: 'first_recharge.png' }
   ];
 
   // Display category cards
@@ -149,7 +149,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       const data = await response.json();
-      //console.log('API Data:', data);
+      console.log('API Data:', data);
 
       if (data.status === 200) {
         allProducts = data.data.product || []; // Store all products
@@ -186,24 +186,6 @@ document.addEventListener("DOMContentLoaded", function () {
     28: 'chest.webp',
     29: 'large_chest.webp',
     30: 'large_chest.webp'
-  };
-
-  // Custom descriptions for specific products
-  const customProductDescriptions = {
-    13: '78 + 8 💎',
-    23: '156 + 16 💎',
-    25: '234 + 23 💎',
-    26: '625 + 81 💎',
-    27: '1860 + 335 💎',
-    28: '3099 + 589 💎',
-    29: '4649 + 883 💎',
-    30: '7740 + 1548 💎',
-    22590: '50 + 50 💎 first recharge!',
-    22591: '150 + 150 💎 first recharge!',
-    22592: '250 + 250 💎 first recharge!',
-    22593: '500 + 500 💎 first recharge!',
-    16642: 'Weekly Pass x 1',
-    33: 'Unlock exclusive skins and rewards!'
   };
 
   // Filter and display products based on category
@@ -243,9 +225,10 @@ document.addEventListener("DOMContentLoaded", function () {
       const isOutOfStock = product.is_out_of_stock == 1; // Assuming 1 for true, 0 for false
       const outOfStockClass = isOutOfStock ? 'out-of-stock' : '';
       const outOfStockText = isOutOfStock ? '<div class="out-of-stock-overlay">Out of Stock</div>' : '';
-      const imageUrl = productImageMap[product.id] ? `${BASE_URL}/assets/${productImageMap[product.id]}` : '';
+      
+      const imageUrl = product.image ? `${BASE_URL}/${product.image}` : `${BASE_URL}/assets/mlbb_card.webp`;
       const imageTag = imageUrl ? `<img src="${imageUrl}" class="card-img-top" alt="${product.spu}">` : '';
-      const productDescription = customProductDescriptions[product.id] || product.description || 'Diamond Pack';
+      const productDescription = product.description || 'Diamond Pack';
 
       productCard.innerHTML = `
         <div class="card h-100 product-card ${outOfStockClass}">
@@ -503,6 +486,23 @@ document.addEventListener("DOMContentLoaded", function () {
           // Redirect to payment gateway
           window.location.href = data.payment_url;
         } else {
+          // If it's a CSRF token error, refresh the token
+          if (data.message && data.message.includes("security token")) {
+            try {
+              const tokenResponse = await fetch(`${BASE_URL}/auth/refresh_csrf.php`);
+              const tokenData = await tokenResponse.json();
+              if (tokenData.new_token) {
+                document.querySelector('meta[name="csrf-token"]').content = tokenData.new_token;
+                // Update the hidden input field if it exists
+                const csrfInput = document.querySelector('input[name="csrf_token"]');
+                if (csrfInput) {
+                  csrfInput.value = tokenData.new_token;
+                }
+              }
+            } catch (tokenError) {
+              console.error("Failed to refresh CSRF token:", tokenError);
+            }
+          }
           showPaymentError("Failed to initiate payment: " + data.message);
           payNowBtn.disabled = false;
           payNowBtn.textContent = "Pay Now";
@@ -555,3 +555,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 });
+
+// Initialize Bootstrap Carousel
+const myCarousel = document.querySelector('#carouselExampleIndicators');
+if (myCarousel) {
+  const carousel = new bootstrap.Carousel(myCarousel, {
+    interval: 5000, // Auto-scroll every 5 seconds
+    wrap: true // Continue scrolling from the last item to the first
+  });
+}

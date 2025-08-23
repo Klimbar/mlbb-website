@@ -29,6 +29,13 @@ error_log('reset_password.php: Token found and valid for email: ' . $reset_reque
 $page_title = 'Reset Password';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Validate CSRF token for security
+    if (!isset($_POST['csrf_token']) || !validateCSRFToken($_POST['csrf_token'])) {
+        $_SESSION['error_message'] = 'Invalid request. Please try again.';
+        header('Location: ' . BASE_URL . '/auth/reset_password?token=' . urlencode($token));
+        exit;
+    }
+    
     error_log('reset_password.php: POST request received.', 0);
     $password = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
@@ -59,35 +66,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 ?>
 
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card mt-5">
-                <div class="card-body">
-                    <h2 class="card-title text-center">Reset Password</h2>
-                    <?php if (isset($_SESSION['error_message'])): ?>
-                        <div class="alert alert-danger"><?php echo $_SESSION['error_message']; unset($_SESSION['error_message']); ?></div>
-                    <?php endif; ?>
-                    <?php if (isset($_SESSION['success_message'])): ?>
-                        <div class="alert alert-success"><?php echo $_SESSION['success_message']; unset($_SESSION['success_message']); ?></div>
-                    <?php endif; ?>
-                    <form action="" method="post">
-                        <div class="mb-3">
-                            <label for="password" class="form-label">New Password</label>
-                            <input type="password" class="form-control" id="password" name="password" required>
-                            <div id="password-feedback" class="invalid-feedback"></div>
+<div class="page-content-wrapper">
+    <div class="main-content">
+        <div class="container auth-container">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card mt-5">
+                        <div class="card-body">
+                            <h2 class="card-title text-center">Reset Password</h2>
+                            <?php if (isset($_SESSION['error_message'])):
+ ?>
+                                <div class="alert alert-danger"><?php echo $_SESSION['error_message']; unset($_SESSION['error_message']); ?></div>
+                            <?php endif; ?>
+                            <?php if (isset($_SESSION['success_message'])):
+ ?>
+                                <div class="alert alert-success"><?php echo $_SESSION['success_message']; unset($_SESSION['success_message']); ?></div>
+                            <?php endif; ?>
+                            <form action="" method="post">
+                                <input type="hidden" name="csrf_token" value="<?= generateCSRFToken() ?>">
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">New Password</label>
+                                    <input type="password" class="form-control" id="password" name="password" required>
+                                    <div id="password-feedback" class="invalid-feedback"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="confirm_password" class="form-label">Confirm New Password</label>
+                                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                                    <div id="confirm-password-feedback" class="invalid-feedback"></div>
+                                </div>
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" class="form-check-input" id="show_password">
+                                    <label class="form-check-label" for="show_password">Show Password</label>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Reset Password</button>
+                            </form>
                         </div>
-                        <div class="mb-3">
-                            <label for="confirm_password" class="form-label">Confirm New Password</label>
-                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
-                            <div id="confirm-password-feedback" class="invalid-feedback"></div>
-                        </div>
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="show_password">
-                            <label class="form-check-label" for="show_password">Show Password</label>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">Reset Password</button>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>

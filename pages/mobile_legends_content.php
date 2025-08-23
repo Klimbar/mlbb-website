@@ -33,11 +33,11 @@ $page_title = 'Mobile Legends: Bang Bang';
                     <form id="playerForm">
                         <div class="mb-3">
                             <label for="userid" class="form-label">Player ID:</label>
-                            <input type="text" inputmode="numeric" pattern="[0-9]*" id="userid" class="form-control" required value="" placeholder="Enter Game ID">
+                            <input type="text" inputmode="numeric" pattern="[0-9]*" id="userid" class="form-control" required value="" placeholder="Enter Game ID" maxlength="15">
                         </div>
                         <div class="mb-3">
                             <label for="zoneid" class="form-label">Zone ID:</label>
-                            <input type="text" inputmode="numeric" pattern="[0-9]*" id="zoneid" class="form-control" required value="" placeholder="Enter Server ID">
+                            <input type="text" inputmode="numeric" pattern="[0-9]*" id="zoneid" class="form-control" required value="" placeholder="Enter Server ID" maxlength="5">
                         </div>
                         <div class="d-grid gap-2 button-group-width">
                             <?php if (!empty($_COOKIE['last_player_id'])): ?>

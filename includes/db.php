@@ -49,9 +49,19 @@ class Database {
             throw new Exception("Execute failed: " . $error);
         }
         
+        // For INSERT/UPDATE/DELETE statements, get_result() returns false
+        // We need to handle this case differently
         $result = $stmt->get_result();
-        $stmt->close();
+        if ($result === false) {
+            // This is likely an INSERT/UPDATE/DELETE statement
+            // Store affected rows count before closing the statement
+            $affectedRows = $this->conn->affected_rows;
+            $stmt->close();
+            // Return the affected rows count for these statements
+            return $affectedRows;
+        }
         
+        $stmt->close();
         return $result;
     }
     

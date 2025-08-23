@@ -59,7 +59,7 @@ try {
     if ($user && $user['is_verified']) {
         $response['success'] = false;
         $response['message'] = 'An account with this email or phone number already exists. Please Login.';
-        $response['new_csrf_token'] = generateCSRFToken();
+        // Don't generate a new token here, let the validateCSRFToken function handle regeneration
         echo json_encode($response);
         exit();
     }
@@ -97,7 +97,7 @@ try {
     error_log('OTP Error: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
 }
 
-$response['new_csrf_token'] = generateCSRFToken();
+// Don't generate a new token here, let the validateCSRFToken function handle regeneration
 echo json_encode($response);
 
 

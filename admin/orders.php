@@ -17,8 +17,15 @@ $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] :
 $limit = 15; // Number of orders per page
 $offset = ($page - 1) * $limit;
 
+$filter = $_GET['filter'] ?? '';
+$where_clause = '';
+
+if ($filter === 'today') {
+    $where_clause = 'WHERE DATE(o.created_at) = CURRENT_DATE()';
+}
+
 // Get total number of orders for calculating total pages
-$total_orders_result = $db->query("SELECT COUNT(*) as count FROM orders")->fetch_assoc();
+$total_orders_result = $db->query("SELECT COUNT(*) as count FROM orders o $where_clause")->fetch_assoc();
 $total_orders = $total_orders_result['count'];
 $total_pages = ceil($total_orders / $limit);
 
@@ -26,6 +33,7 @@ $orders = $db->query("
     SELECT o.*, u.username
     FROM orders o
     JOIN users u ON o.user_id = u.id
+    $where_clause
     ORDER BY o.created_at DESC
     LIMIT ? OFFSET ?
 ", [$limit, $offset])->fetch_all(MYSQLI_ASSOC);
@@ -34,7 +42,7 @@ $orders = $db->query("
 <div class="container main-content">
     <h2>Order Management</h2>
     
-    <div class="table-responsive">
+    <div class="table-responsive table-responsive-cards">
         <table class="table table-striped table-hover">
             <!-- Table headers -->
             <thead>
@@ -53,16 +61,17 @@ $orders = $db->query("
             <tbody>
                 <?php foreach ($orders as $order): ?>
                 <tr>
-                    <td><a href="<?php echo BASE_URL; ?>/admin/order-details?id=<?= $order['id'] ?>"><?= htmlspecialchars($order['order_id']) ?></a></td>
-                    <td><?= htmlspecialchars($order['username']) ?></td>
-                    <td><?= htmlspecialchars($order['product_name']) ?></td>
-                    <td>₹<?= number_format($order['amount'], 2) ?></td>
-                    <td>
+                    <td data-label="Order ID"><a href="<?php echo BASE_URL; ?>/admin/order-details?id=<?= $order['id'] ?>"><?= htmlspecialchars($order['order_id']) ?></a></td>
+                    <td data-label="User"><?= htmlspecialchars($order['username']) ?></td>
+                    <td data-label="Product"><?= htmlspecialchars($order['product_name']) ?></td>
+                    <td data-label="Amount">₹<?= number_format($order['amount'], 2) ?></td>
+                    <td data-label="Order Status">
                         <span class="badge bg-<?= $order['order_status'] === 'completed' ? 'success' : ($order['order_status'] === 'pending' || $order['order_status'] === 'processing' ? 'warning' : 'danger') ?>">
-                                    <?= ucfirst($order['order_status']) ?>
+                                    <?= ucfirst($order['order_status'])
+                                    ?>
                                 </span>
                     </td>
-                    <td>
+                    <td data-label="Payment Status">
                         <?php
                         $payment_status_display = $order['payment_status'] ?? 'N/A'; // Default to N/A if NULL
                         $badge_class = 'secondary'; // Default badge color for N/A
@@ -76,10 +85,11 @@ $orders = $db->query("
                         }
                         ?>
                         <span class="badge bg-<?= $badge_class ?>">
-                            <?= ucfirst($payment_status_display) ?>
+                            <?= ucfirst($payment_status_display)
+                            ?>
                         </span>
                     </td>
-                    <td>
+                    <td data-label="Actions">
                         <a href="<?php echo BASE_URL; ?>/admin/order-details?id=<?= $order['id'] ?>" class="btn btn-sm btn-primary">View</a>
                     </td>
                 </tr>
@@ -92,7 +102,7 @@ $orders = $db->query("
             <ul class="pagination justify-content-center">
                 <?php if ($page > 1): ?>
                     <li class="page-item">
-                        <a class="page-link" href="<?php echo BASE_URL; ?>/admin/orders?page=<?= $page - 1 ?>" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
+                        <a class="page-link" href="<?php echo BASE_URL; ?>/admin/orders?page=<?= $page - 1 ?><?= !empty($filter) ? '&filter=' . $filter : '' ?>" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
                     </li>
                 <?php endif; ?>
 
@@ -101,7 +111,7 @@ $orders = $db->query("
                 for ($i = 1; $i <= $total_pages; $i++):
                     if ($i == 1 || $i == $total_pages || ($i >= $page - $window && $i <= $page + $window)):
                 ?>
-                    <li class="page-item <?= ($i == $page) ? 'active' : '' ?>"><a class="page-link" href="<?php echo BASE_URL; ?>/admin/orders?page=<?= $i ?>"><?= $i ?></a></li>
+                    <li class="page-item <?= ($i == $page) ? 'active' : '' ?>"><a class="page-link" href="<?php echo BASE_URL; ?>/admin/orders?page=<?= $i ?><?= !empty($filter) ? '&filter=' . $filter : '' ?>"><?= $i ?></a></li>
                 <?php
                     elseif ($i == $page - $window - 1 || $i == $page + $window + 1):
                 ?>
@@ -113,7 +123,7 @@ $orders = $db->query("
 
                 <?php if ($page < $total_pages): ?>
                     <li class="page-item">
-                        <a class="page-link" href="<?php echo BASE_URL; ?>/admin/orders?page=<?= $page + 1 ?>" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
+                        <a class="page-link" href="<?php echo BASE_URL; ?>/admin/orders?page=<?= $page + 1 ?><?= !empty($filter) ? '&filter=' . $filter : '' ?>" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
                     </li>
                 <?php endif; ?>
             </ul>
