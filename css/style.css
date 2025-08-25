@@ -432,32 +432,75 @@ footer {
     outline-offset: -2px;
 }
 
-/* Enhanced Mobile-Friendly Carousel Styling */
+/* Enhanced Mobile-Friendly Carousel Styling - Complete Version */
 
 .carousel {
-    border-radius: var(--border-radius);
     overflow: hidden;
-    box-shadow: var(--box-shadow);
-    touch-action: pan-y pinch-zoom; /* Enable smooth touch scrolling */
-    border: 1px solid var(--secondary-accent);
+    touch-action: pan-y pinch-zoom;
+    width: 100%;
+    max-width: 100%;
+    background-color: transparent;
 }
 
 .carousel-item {
-    height: 650px;
+    /* Use aspect ratio for consistent proportions */
+    aspect-ratio: 16/9; /* Standard widescreen ratio */
     position: relative;
-    background: none;
+    background-color: transparent;
+    width: 100%;
+    max-height: 650px; /* Limit maximum height */
 }
 
 .carousel-item img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    /* Use object-fit: contain to show full image without cropping */
+    object-fit: contain;
     object-position: center;
-    user-select: none; /* Prevent image selection on mobile */
-    -webkit-user-drag: none; /* Prevent dragging on iOS */
+    user-select: none;
+    -webkit-user-drag: none;
+    background-color: transparent;
+    max-height: 650px; /* Limit maximum height */
 }
 
-/* Mobile-optimized controls */
+/* Responsive height adjustments */
+@media (max-width: 1200px) {
+    .carousel-item {
+        max-height: 500px;
+    }
+}
+
+@media (max-width: 992px) {
+    .carousel-item {
+        max-height: 400px;
+    }
+}
+
+@media (max-width: 768px) {
+    .carousel-item {
+        max-height: 350px;
+    }
+}
+
+@media (max-width: 576px) {
+    .carousel-item {
+        max-height: 250px;
+    }
+}
+
+@media (max-width: 480px) {
+    .carousel-item {
+        max-height: 200px;
+    }
+}
+
+/* Alternative: If you prefer to fill the container but want consistent cropping */
+.carousel-item.fill-mode img {
+    object-fit: cover;
+    object-position: center;
+}
+
+/* Mobile-optimized controls - kept as before */
 .carousel-control-prev,
 .carousel-control-next {
     background: rgba(0, 0, 0, 0.5);
@@ -512,10 +555,10 @@ footer {
     transform: scale(1.2);
 }
 
-/* Responsive adjustments */
- @media (max-width: 768px) {
+/* Responsive adjustments for controls */
+@media (max-width: 768px) {
     .carousel-item {
-        height: 250px;
+        aspect-ratio: 16/9;
     }
     
     /* Hide controls on very small screens to emphasize swipe gestures */
@@ -540,9 +583,9 @@ footer {
     }
 }
 
- @media (max-width: 576px) {
+@media (max-width: 576px) {
     .carousel-item {
-        height: 150px;
+        aspect-ratio: 4/3;
     }
     
     /* Even smaller controls on tiny screens */
@@ -563,30 +606,60 @@ footer {
 /* Add smooth scrolling behavior */
 .carousel-inner {
     -webkit-overflow-scrolling: touch;
+    border-radius: inherit;
 }
 
-/* Optional: Add subtle animation hint for users */
- @keyframes swipe-hint {
-    0%, 100% { transform: translateX(0); }
-    50% { transform: translateX(-5px); }
+/* Loading state for images */
+.carousel-item img {
+    transition: opacity 0.3s ease;
 }
 
-.carousel-item:first-child::after {
+.carousel-item img:not([src]) {
+    opacity: 0;
+}
+
+/* Optional: Add subtle border for better definition */
+.carousel-item::after {
     content: '';
     position: absolute;
-    top: 50%;
-    right: 20px;
-    width: 30px;
-    height: 2px;
-    background: rgba(255, 255, 255, 0.7);
-    border-radius: 2px;
-    animation: swipe-hint 2s ease-in-out infinite;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
     pointer-events: none;
 }
 
- @media (max-width: 768px) {
-    .carousel-item:first-child::after {
-        display: none; /* Hide hint on mobile since swipe is intuitive */
+/* Ensure carousel maintains its container width */
+.carousel .carousel-inner,
+.carousel .carousel-item {
+    border-radius: inherit;
+}
+
+/* Responsive breakpoints - only adjust aspect ratios */
+@media (max-width: 1200px) {
+    .carousel-item {
+        aspect-ratio: 16/9;
+    }
+}
+
+@media (max-width: 992px) {
+    .carousel-item {
+        aspect-ratio: 16/9;
+    }
+}
+
+@media (max-width: 480px) {
+    .carousel-item {
+        aspect-ratio: 4/3;
+    }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+    .carousel-item img {
+        transition: none;
     }
 }
 

@@ -31,8 +31,12 @@ $recentOrders = $db->query("
 
 <div class="admin-main-content main-content">
     <div class="container-fluid">
+        <div class="d-flex flex-wrap gap-2 mb-4">
+            <a href="<?php echo BASE_URL; ?>/admin/orders?filter=today" class="btn btn-info">Today's Orders</a>
+            <a href="<?php echo BASE_URL; ?>/admin/orders" class="btn btn-primary">View All Orders</a>
+            <a href="<?php echo BASE_URL; ?>/admin/manage-products" class="btn btn-secondary">Manage Products</a>
+        </div>
         <h2>Admin Dashboard</h2>
-        
         <div class="row g-4 mb-4">
             <div class="col-lg-4 col-md-6">
                 <div class="card text-center">
@@ -129,11 +133,6 @@ $recentOrders = $db->query("
                             <?php endforeach; ?>
                         </tbody>
                     </table>
-                </div>
-                <div class="d-flex flex-wrap gap-2 mt-3">
-                    <a href="<?php echo BASE_URL; ?>/admin/orders?filter=today" class="btn btn-info">Today's Orders</a>
-                    <a href="<?php echo BASE_URL; ?>/admin/orders" class="btn btn-primary">View All Orders</a>
-                    <a href="<?php echo BASE_URL; ?>/admin/manage-products" class="btn btn-secondary">Manage Products</a>
                 </div>
             </div>
         </div>

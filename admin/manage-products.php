@@ -376,11 +376,126 @@ $products = $db->query("SELECT * FROM products ORDER BY price ASC")->fetch_all(M
 $custom_products = $db->query("SELECT * FROM custom_products ORDER BY id ASC")->fetch_all(MYSQLI_ASSOC);
 ?>
 
+<style>
+    /* Ensure price inputs remain visible on all screen sizes */
+    @media (max-width: 768px) {
+        /* Force minimum width for all price inputs */
+        .table-responsive .price-input {
+            min-width: 100px !important;
+        }
+        
+        /* Ensure input groups don't collapse */
+        .table-responsive .input-group.flex-nowrap {
+            min-width: 120px !important;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .table-responsive .price-input {
+            min-width: 80px !important;
+        }
+        
+        .table-responsive .input-group.flex-nowrap {
+            min-width: 100px !important;
+        }
+    }
+    
+    @media (max-width: 400px) {
+        .table-responsive .price-input {
+            min-width: 70px !important;
+        }
+        
+        .table-responsive .input-group.flex-nowrap {
+            min-width: 90px !important;
+        }
+    }
+    
+    /* Ensure inputs are always visible */
+    .table-responsive .price-input {
+        min-width: 80px;
+    }
+</style>
+
 <div class="admin-main-content main-content">
     <div class="container-fluid">
-    <h2>Manage Diamond Pack Details</h2>
+    <h2><strong>Manage Custom Products</strong></h2>
 
     <?php echo $message; ?>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>Add New Custom Product</h3>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="<?= $page_csrf_token ?>">
+                <div class="row">
+                    <div class="col-md-3"><div class="form-group"><label for="name">Product Name</label><input type="text" class="form-control" id="name" name="name" required></div></div>
+                    <div class="col-md-3"><div class="form-group"><label for="description">Description</label><input type="text" class="form-control" id="description" name="description"></div></div>
+                    <div class="col-md-3"><div class="form-group"><label for="image">Image</label><input type="file" class="form-control" id="image" name="image"></div></div>
+                    <div class="col-md-3"><div class="form-group"><label for="product_ids">Product IDs</label><input type="text" class="form-control" id="product_ids" name="product_ids" required></div></div>
+                    <div class="col-md-3"><div class="form-group"><label for="selling_price">Selling Price (₹)</label><input type="number" step="0.01" class="form-control price-input" id="selling_price" name="selling_price" required></div></div>
+                </div>
+                <button type="submit" name="add_custom_product" class="btn btn-primary mt-3">Add Custom Product</button>
+            </form>
+        </div>
+    </div>
+
+    <form method="POST" action="" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="<?= $page_csrf_token ?>">
+        <div class="card">
+            <div class="card-header">
+                <h3>Custom Product List</h3>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive table-responsive-cards">
+                    <table class="table table-striped table-hover">
+                        <thead><tr><th>ID</th><th>Name</th><th>Description</th><th>Image</th><th>Product IDs</th><th>Price</th><th>Out of Stock</th><th>Actions</th></tr></thead>
+                        <tbody>
+                            <?php foreach ($custom_products as $product): ?>
+                                <tr>
+                                    <td data-label="ID"><?php echo htmlspecialchars($product['id']); ?></td>
+                                    <td data-label="Name"><input type="text" class="form-control" name="custom_products[<?php echo $product['id']; ?>][name]" value="<?php echo htmlspecialchars($product['name']); ?>"></td>
+                                    <td data-label="Description"><input type="text" class="form-control" name="custom_products[<?php echo $product['id']; ?>][description]" value="<?php echo htmlspecialchars($product['description']); ?>"></td>
+                                    <td data-label="Image">
+                                        <input type="file" name="custom_products[<?php echo $product['id']; ?>][image]" class="form-control">
+                                        <input type="hidden" name="custom_products[<?php echo $product['id']; ?>][existing_image]" value="<?php echo htmlspecialchars($product['image']); ?>">
+                                        <?php if ($product['image']): ?>
+                                            <img src="<?= BASE_URL . '/' . htmlspecialchars($product['image']) ?>" alt="Product Image" style="max-width: 100px; margin-top: 10px;">
+                                        <?php endif; ?>
+                                    </td>
+                                    <td data-label="Product IDs"><input type="text" class="form-control" name="custom_products[<?php echo $product['id']; ?>][product_ids]" value="<?php echo htmlspecialchars($product['product_ids']); ?>"></td>
+                                    <td data-label="Price">
+    <div class="input-group flex-nowrap">
+        <span class="input-group-text">₹</span>
+        <input type="number" step="0.01" class="form-control price-input" name="custom_products[<?php echo $product['id']; ?>][selling_price]" value="<?php echo htmlspecialchars($product['selling_price']); ?>">
+    </div>
+</td>
+                                    <td data-label="Out of Stock">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="custom_is_out_of_stock_<?php echo $product['id']; ?>" name="custom_products[<?php echo $product['id']; ?>][is_out_of_stock]" <?php echo $product['is_out_of_stock'] ? 'checked' : ''; ?>>
+                                            <label class="form-check-label" for="custom_is_out_of_stock_<?php echo $product['id']; ?>"></label>
+                                        </div>
+                                    </td>
+                                    <td data-label="Actions" class="table-actions">
+                                        <button type="submit" name="update_custom_product" value="<?php echo $product['id']; ?>" class="btn btn-primary btn-sm">Update</button>
+                                        <button type="submit" name="delete_custom_product" value="<?php echo $product['id']; ?>" class="btn btn-danger btn-sm delete-custom-product-btn" data-product-id="<?php echo $product['id']; ?>">Delete</button>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="mt-3 d-flex justify-content-start gap-2">
+            <button type="submit" name="update_all_custom_products" class="btn btn-success">Update All</button>
+        </div>
+    </form>
+    
+    <hr class="my-5">
+
+    <h2><strong>Manage Regular Pack</strong></h2>
 
     <form method="POST" action="" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="<?= $page_csrf_token ?>">
@@ -418,9 +533,9 @@ $custom_products = $db->query("SELECT * FROM custom_products ORDER BY id ASC")->
                                     </td>
                                     <td data-label="API Cost (R$)">R$<?php echo number_format($product['price'], 2); ?></td>
                                     <td data-label="Selling Price (₹)">
-                                        <div class="input-group input-group-sm flex-nowrap">
+                                        <div class="input-group flex-nowrap">
                                             <span class="input-group-text">₹</span>
-                                            <input type="number" step="0.01" class="form-control" name="products[<?php echo $product['id']; ?>][selling_price]" value="<?php echo htmlspecialchars($product['selling_price']); ?>">
+                                            <input type="number" step="0.01" class="form-control price-input" name="products[<?php echo $product['id']; ?>][selling_price]" value="<?php echo htmlspecialchars($product['selling_price']); ?>">
                                         </div>
                                     </td>
                                     <td data-label="Out of Stock">
@@ -440,76 +555,6 @@ $custom_products = $db->query("SELECT * FROM custom_products ORDER BY id ASC")->
         <div class="mt-3 d-flex justify-content-start gap-2">
             <button type="submit" name="update_all_products" class="btn btn-success">Update All</button>
             <a href="<?php echo BASE_URL; ?>/admin/update_products" class="btn btn-info">Fetch/Update Products from API</a>
-        </div>
-    </form>
-
-    <hr class="my-5">
-
-    <h2><strong>Manage Custom Products</strong></h2>
-
-    <div class="card mb-4">
-        <div class="card-header">
-            <h3>Add New Custom Product</h3>
-        </div>
-        <div class="card-body">
-            <form method="POST" action="" enctype="multipart/form-data">
-                <input type="hidden" name="csrf_token" value="<?= $page_csrf_token ?>">
-                <div class="row">
-                    <div class="col-md-3"><div class="form-group"><label for="name">Product Name</label><input type="text" class="form-control" id="name" name="name" required></div></div>
-                    <div class="col-md-3"><div class="form-group"><label for="description">Description</label><input type="text" class="form-control" id="description" name="description"></div></div>
-                    <div class="col-md-3"><div class="form-group"><label for="image">Image</label><input type="file" class="form-control" id="image" name="image"></div></div>
-                    <div class="col-md-3"><div class="form-group"><label for="product_ids">Product IDs</label><input type="text" class="form-control" id="product_ids" name="product_ids" required></div></div>
-                    <div class="col-md-3"><div class="form-group"><label for="selling_price">Selling Price (₹)</label><input type="number" step="0.01" class="form-control" id="selling_price" name="selling_price" required></div></div>
-                </div>
-                <button type="submit" name="add_custom_product" class="btn btn-primary mt-3">Add Custom Product</button>
-            </form>
-        </div>
-    </div>
-
-    <form method="POST" action="" enctype="multipart/form-data">
-        <input type="hidden" name="csrf_token" value="<?= $page_csrf_token ?>">
-        <div class="card">
-            <div class="card-header">
-                <h3>Custom Product List</h3>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive table-responsive-cards">
-                    <table class="table table-striped table-hover">
-                        <thead><tr><th>ID</th><th>Name</th><th>Description</th><th>Image</th><th>Product IDs</th><th>Price</th><th>Out of Stock</th><th>Actions</th></tr></thead>
-                        <tbody>
-                            <?php foreach ($custom_products as $product): ?>
-                                <tr>
-                                    <td data-label="ID"><?php echo htmlspecialchars($product['id']); ?></td>
-                                    <td data-label="Name"><input type="text" class="form-control" name="custom_products[<?php echo $product['id']; ?>][name]" value="<?php echo htmlspecialchars($product['name']); ?>"></td>
-                                    <td data-label="Description"><input type="text" class="form-control" name="custom_products[<?php echo $product['id']; ?>][description]" value="<?php echo htmlspecialchars($product['description']); ?>"></td>
-                                    <td data-label="Image">
-                                        <input type="file" name="custom_products[<?php echo $product['id']; ?>][image]" class="form-control">
-                                        <input type="hidden" name="custom_products[<?php echo $product['id']; ?>][existing_image]" value="<?php echo htmlspecialchars($product['image']); ?>">
-                                        <?php if ($product['image']): ?>
-                                            <img src="<?= BASE_URL . '/' . htmlspecialchars($product['image']) ?>" alt="Product Image" style="max-width: 100px; margin-top: 10px;">
-                                        <?php endif; ?>
-                                    </td>
-                                    <td data-label="Product IDs"><input type="text" class="form-control" name="custom_products[<?php echo $product['id']; ?>][product_ids]" value="<?php echo htmlspecialchars($product['product_ids']); ?>"></td>
-                                    <td data-label="Price"><div class="input-group input-group-sm flex-nowrap"><span class="input-group-text">₹</span><input type="number" step="0.01" class="form-control" name="custom_products[<?php echo $product['id']; ?>][selling_price]" value="<?php echo htmlspecialchars($product['selling_price']); ?>"></div></td>
-                                    <td data-label="Out of Stock">
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" id="custom_is_out_of_stock_<?php echo $product['id']; ?>" name="custom_products[<?php echo $product['id']; ?>][is_out_of_stock]" <?php echo $product['is_out_of_stock'] ? 'checked' : ''; ?>>
-                                            <label class="form-check-label" for="custom_is_out_of_stock_<?php echo $product['id']; ?>"></label>
-                                        </div>
-                                    </td>
-                                    <td data-label="Actions" class="table-actions">
-                                        <button type="submit" name="update_custom_product" value="<?php echo $product['id']; ?>" class="btn btn-primary btn-sm">Update</button>
-                                        <button type="submit" name="delete_custom_product" value="<?php echo $product['id']; ?>" class="btn btn-danger btn-sm delete-custom-product-btn" data-product-id="<?php echo $product['id']; ?>">Delete</button>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        <div class="mt-3 d-flex justify-content-start gap-2">
-            <button type="submit" name="update_all_custom_products" class="btn btn-success">Update All</button>
         </div>
     </form>
     <script nonce="<?= htmlspecialchars($nonce) ?>">

@@ -200,17 +200,47 @@ function verify_payment_with_gateway(string $order_id): array
  */
 function fulfill_order(array $order): array
 {
-    $params = [
-        'uid' => API_UID,
-        'email' => API_EMAIL,
-        'userid' => $order['player_id'],
-        'zoneid' => $order['zone_id'],
-        'product' => 'mobilelegends',
-        'productid' => $order['product_id'],
-        'time' => time()
-    ];
-    $params['sign'] = generateSign($params, API_KEY);
-    return callApi('/smilecoin/api/createorder', $params);
+    $product_ids = explode('&', $order['product_id']);
+    $overall_status = ['status' => 200, 'message' => 'All products fulfilled successfully.'];
+    $fulfilled_products = [];
+    $failed_products = [];
+
+    foreach ($product_ids as $product_id) {
+        $params = [
+            'uid' => API_UID,
+            'email' => API_EMAIL,
+            'userid' => $order['player_id'],
+            'zoneid' => $order['zone_id'],
+            'product' => 'mobilelegends',
+            'productid' => trim($product_id),
+            'time' => time()
+        ];
+        $params['sign'] = generateSign($params, API_KEY);
+
+        $response = callApi('/smilecoin/api/createorder', $params);
+
+        if (isset($response['status']) && $response['status'] === 200) {
+            $fulfilled_products[] = $product_id;
+        } else {
+            $failed_products[] = [
+                'product_id' => $product_id,
+                'response' => $response
+            ];
+            $overall_status['status'] = 500; // Internal Server Error
+            $overall_status['message'] = 'One or more products failed to fulfill.';
+        }
+    }
+
+    if (!empty($failed_products)) {
+        $overall_status['details'] = [
+            'fulfilled' => $fulfilled_products,
+            'failed' => $failed_products
+        ];
+        // Log detailed error
+        log_message('Fulfillment partially failed for order ' . $order['order_id'] . '. Details: ' . json_encode($failed_products), 'error');
+    }
+
+    return $overall_status;
 }
 
 
